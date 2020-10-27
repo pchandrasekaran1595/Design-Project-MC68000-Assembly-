@@ -1,0 +1,2053 @@
+00002AD4 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.12.29
+Created On: 27-Apr-18 12:30:58 PM
+
+00001000                             1         ORG $1000
+00001000= 4D 4F 4E 49 54 4F ...      2  PROMPT DC.B 'MONITOR441 > ',0
+0000100E  =00003000                  3  STACK EQU $3000
+0000100E                             4  IP_BUFFER DS.B 80
+0000105E  =00002C00                  5  A2ADDRS EQU $2C00
+0000105E= 20 00                      6  SPACE DC.B ' ',0 
+00001060= 41 56 41 49 4C 41 ...      7  HELPMSG_1  DC.B 'AVAILABLE COMMANDS AND THEIR USAGE',0
+00001083= 4D 45 4D 4F 52 59 ...      8  HELPMSG_2  DC.B 'MEMORY DISPLAY ---> MDSP <ADDRS> <SPACE> OR MDSP <ADDRS1> <ADDRS2> <SPACE>',0
+000010CE= 53 4F 52 54 49 4E ...      9  HELPMSG_3  DC.B 'SORTING MEMORY ---> SORTW <ADDRS1> <ADDRS2> <ORDER (A OR D)>',0
+0000110B= 4D 45 4D 4F 52 59 ...     10  HELPMSG_4  DC.B 'MEMORY MODIFY  ---> MM <ADDRS>;<SIZE> (B OR W OR L)',0
+0000113F= 4D 45 4D 4F 52 59 ...     11  HELPMSG_5  DC.B 'MEMORY SET     ---> MS <ADDRS> <DATA> ',0
+00001166= 42 4C 4F 43 4B 20 ...     12  HELPMSG_6  DC.B 'BLOCK FILL     ---> BF <ADDRS1> <ADDRS2>',0
+0000118F= 42 4C 4F 43 4B 20 ...     13  HELPMSG_7  DC.B 'BLOCK MOVE     ---> BMOV <ADDRS1> <ADDRS2> <N>',0
+000011BE= 42 4C 4F 43 4B 20 ...     14  HELPMSG_8  DC.B 'BLOCK TEST     ---> BTST <ADDRS1> <ADDRS2> <SPACE>',0
+000011F1= 42 4C 4F 43 4B 20 ...     15  HELPMSG_9  DC.B 'BLOCK SEARCH   ---> BSCH <ADDRS1> <ADDRS2>',0
+0000121C= 47 4F 20 20 20 20 ...     16  HELPMSG_10 DC.B 'GO             ---> GO <ADDRS>',0
+0000123B= 44 46 20 20 20 20 ...     17  HELPMSG_11 DC.B 'DF             ---> DF',0
+00001252= 52 45 47 49 53 54 ...     18  HELPMSG_12 DC.B 'REGISTER MODIFY---> RM .<D REGISTER> <LONGWORD DATA> ',0
+00001288= 44 41 54 41 20 43 ...     19  HELPMSG_13 DC.B 'DATA CONVERT   ---> DCON <D OR H> <DATA> <SPACE> ',0
+000012BA= 45 58 49 54 20 20 ...     20  HELPMSG_14 DC.B 'EXIT           ---> EXIT',0
+000012D3= 41 44 44 52 45 53 ...     21  BSCHMSG_2 DC.B 'ADDRESS :',0
+000012DD= 44 41 54 41 20 20 ...     22  BSCHMSG_1 DC.B 'DATA    :',0
+000012E7= 44 41 54 41 20 4E ...     23  BSCHMSG_3 DC.B 'DATA NOT FOUND. PLEASE TRY AGAIN.',0
+00001309= 4D 45 4D 4F 52 59 ...     24  BTSTMSG_1 DC.B 'MEMORY TEST PASSED WITH NO ERRORS',0
+0000132B= 45 52 52 4F 52 00         25  BTSTMSG_2 DC.B 'ERROR',0
+00001331= 44 41 54 41 20 57 ...     26  BTSTMSG_3 DC.B 'DATA WRITTEN = ',0
+00001341= 44 41 54 41 20 52 ...     27  BTSTMSG_4 DC.B 'DATA READ    = ',0
+00001351= 41 44 44 52 45 53 ...     28  BTSTMSG_5 DC.B 'ADDRESS      = ',0
+00001361= 44 45 43 49 4D 41 ...     29  DCONMSG_1 DC.B 'DECIMAL = ',0
+0000136C= 48 45 58 41 44 45 ...     30  DCONMSG_2 DC.B 'HEXADECIMAL = ',0
+0000137B= 50 55 54 20 55 53 ...     31  GOMSG DC.B 'PUT USER PROGRAM HERE',0
+00001391= 45 58 49 54 49 4E ...     32  EXITMSG DC.B 'EXITING MONITOR PROGRAM',0
+000013A9= 49 4E 56 41 4C 49 ...     33  INVALID_MSG DC.B 'INVALID COMMAND. PLEASE TRY AGAIN. REFER TO USERS MANUAL FOR CORRECT USAGE.',0
+000013F5= 42 55 53 20 45 52 ...     34  BERR_MSG  DC.B 'BUS ERROR EXCEPTION',0
+00001409= 41 44 44 52 45 53 ...     35  AERR_MSG  DC.B 'ADDRESS ERROR EXCEPTION',0
+00001421= 49 4C 4C 45 47 41 ...     36  ILLERR_MSG  DC.B 'ILLEGAL INSTRUCTION EXCEPTION',0
+0000143F= 50 52 49 56 49 4C ...     37  PRIVERR_MSG  DC.B 'PRIVILEGE VIOLATION EXCEPTION',0
+0000145D= 44 49 56 49 44 45 ...     38  DIVZERR_MSG  DC.B 'DIVIDE BY ZERO EXCEPTION',0
+00001476= 43 48 4B 20 49 4E ...     39  CHKERR_MSG DC.B 'CHK INSTRUCTION EXCEPTION',0
+00001490= 4C 49 4E 45 20 41 ...     40  LINEAERR_MSG DC.B 'LINE A EMULATOR',0
+000014A0= 4C 49 4E 45 20 46 ...     41  LINEFERR_MSG DC.B 'LINE F EMULATOR',0
+000014B0= 41 30 20 3D 20 00         42  ADDRREG_0 DC.B 'A0 = ',0
+000014B6= 41 31 20 3D 20 00         43  ADDRREG_1 DC.B 'A1 = ',0
+000014BC= 41 32 20 3D 20 00         44  ADDRREG_2 DC.B 'A2 = ',0
+000014C2= 41 33 20 3D 20 00         45  ADDRREG_3 DC.B 'A3 = ',0
+000014C8= 41 34 20 3D 20 00         46  ADDRREG_4 DC.B 'A4 = ',0
+000014CE= 41 35 20 3D 20 00         47  ADDRREG_5 DC.B 'A5 = ',0
+000014D4= 41 36 20 3D 20 00         48  ADDRREG_6 DC.B 'A6 = ',0
+000014DA= 41 37 20 3D 20 00         49  ADDRREG_7 DC.B 'A7 = ',0
+000014E0= 44 30 20 3D 20 00         50  DATAREG_0 DC.B 'D0 = ',0
+000014E6= 44 31 20 3D 20 00         51  DATAREG_1 DC.B 'D1 = ',0
+000014EC= 44 32 20 3D 20 00         52  DATAREG_2 DC.B 'D2 = ',0
+000014F2= 44 33 20 3D 20 00         53  DATAREG_3 DC.B 'D3 = ',0
+000014F8= 44 34 20 3D 20 00         54  DATAREG_4 DC.B 'D4 = ',0
+000014FE= 44 35 20 3D 20 00         55  DATAREG_5 DC.B 'D5 = ',0
+00001504= 44 36 20 3D 20 00         56  DATAREG_6 DC.B 'D6 = ',0
+0000150A= 44 37 20 3D 20 00         57  DATAREG_7 DC.B 'D7 = ',0
+00001510= 50 43 20 3D 20 00         58  PROGCOUNT DC.B 'PC = ',0
+00001516= 53 52 20 3D 20 00         59  STATUSREG DC.B 'SR = ',0
+0000151C                            60  CMDTABLE
+0000151C= 48 45 4C 50 20 20         61      DC.B 'HELP  '
+00001522= 4D 44 53 50 20 20         62      DC.B 'MDSP  '
+00001528= 53 4F 52 54 57 20         63      DC.B 'SORTW ' 
+0000152E= 4D 4D 20 20 20 20         64      DC.B 'MM    '
+00001534= 4D 53 20 20 20 20         65      DC.B 'MS    '
+0000153A= 42 46 20 20 20 20         66      DC.B 'BF    '
+00001540= 42 4D 4F 56 20 20         67      DC.B 'BMOV  '
+00001546= 42 54 53 54 20 20         68      DC.B 'BTST  '
+0000154C= 42 53 43 48 20 20         69      DC.B 'BSCH  '
+00001552= 47 4F 20 20 20 20         70      DC.B 'GO    '
+00001558= 44 46 20 20 20 20         71      DC.B 'DF    '
+0000155E= 52 4D 20 20 20 20         72      DC.B 'RM    '
+00001564= 44 43 4F 4E 20 20         73      DC.B 'DCON  '
+0000156A= 45 58 49 54 20 20         74      DC.B 'EXIT  '
+00001570                            75  CMDADDRS
+00001570= 158C                      76      DC.W HELP
+00001572= 1636                      77      DC.W MDSP
+00001574= 17A6                      78      DC.W SORTW
+00001576= 1956                      79      DC.W MM
+00001578= 1AF6                      80      DC.W MS
+0000157A= 1BD8                      81      DC.W BF
+0000157C= 1EF8                      82      DC.W BMOV
+0000157E= 1D74                      83      DC.W BTST
+00001580= 2022                      84      DC.W BSCH
+00001582= 21B6                      85      DC.W GO
+00001584= 2212                      86      DC.W DF
+00001586= 243A                      87      DC.W RM
+00001588= 25EC                      88      DC.W DCON
+0000158A= 26C8                      89      DC.W EXIT    
+0000158C                            90  
+0000158C                            91  HELP:
+0000158C  48E7 8040                 92      MOVEM.L D0/A1,-(SP) 
+00001590  43F8 105E                 93      LEA SPACE,A1
+00001594  4EB9 000026E4             94      JSR DISPCR
+0000159A  43F8 1060                 95      LEA HELPMSG_1,A1
+0000159E  4EB9 000026E4             96      JSR DISPCR
+000015A4  43F8 1083                 97      LEA HELPMSG_2,A1
+000015A8  4EB9 000026E4             98      JSR DISPCR
+000015AE  43F8 10CE                 99      LEA HELPMSG_3,A1
+000015B2  4EB9 000026E4            100      JSR DISPCR
+000015B8  43F8 110B                101      LEA HELPMSG_4,A1
+000015BC  4EB9 000026E4            102      JSR DISPCR
+000015C2  43F8 113F                103      LEA HELPMSG_5,A1
+000015C6  4EB9 000026E4            104      JSR DISPCR
+000015CC  43F8 1166                105      LEA HELPMSG_6,A1
+000015D0  4EB9 000026E4            106      JSR DISPCR
+000015D6  43F8 118F                107      LEA HELPMSG_7,A1
+000015DA  4EB9 000026E4            108      JSR DISPCR
+000015E0  43F8 11BE                109      LEA HELPMSG_8,A1
+000015E4  4EB9 000026E4            110      JSR DISPCR
+000015EA  43F8 11F1                111      LEA HELPMSG_9,A1
+000015EE  4EB9 000026E4            112      JSR DISPCR
+000015F4  43F8 121C                113      LEA HELPMSG_10,A1
+000015F8  4EB9 000026E4            114      JSR DISPCR
+000015FE  43F8 123B                115      LEA HELPMSG_11,A1
+00001602  4EB9 000026E4            116      JSR DISPCR
+00001608  43F8 1252                117      LEA HELPMSG_12,A1
+0000160C  4EB9 000026E4            118      JSR DISPCR
+00001612  43F8 1288                119      LEA HELPMSG_13,A1
+00001616  4EB9 000026E4            120      JSR DISPCR
+0000161C  43F8 12BA                121      LEA HELPMSG_14,A1
+00001620  4EB9 000026E4            122      JSR DISPCR
+00001626  43F8 105E                123      LEA SPACE,A1
+0000162A  4EB9 000026E4            124      JSR DISPCR
+00001630  4CDF 0201                125      MOVEM.L (SP)+,D0/A1
+00001634  4E75                     126      RTS
+00001636                           127      
+00001636                           128  MDSP:
+00001636  48E7 FFFE                129      MOVEM.L D0-D7/A0-A6,-(SP)
+0000163A  7800                     130      MOVEQ #0,D4
+0000163C  5A49                     131      ADDQ #5,A1
+0000163E  0C19 0024                132      CMPI.B #$24,(A1)+
+00001642  6700 0008                133      BEQ MDSP_NEXT
+00001646  4EF9 00001796            134      JMP MDSP_INVALID
+0000164C  4EB9 000027B4            135  MDSP_NEXT: JSR GET_ADDR_ASCII 
+00001652  93C2                     136      SUB.L D2,A1
+00001654  0C04 0003                137      CMPI.B #$03,D4
+00001658  6700 0012                138      BEQ MDSP_3
+0000165C  0C04 0004                139      CMPI.B #$04,D4
+00001660  6700 005E                140      BEQ MDSP_4
+00001664  0C04 0005                141      CMPI.B #$05,D4
+00001668  6700 00AA                142      BEQ MDSP_5
+0000166C  0C03 000C                143  MDSP_3:    CMPI.B #$0C,D3
+00001670  6E00 0018                144      BGT MDSP_3RANGE
+00001674  4EB9 0000287C            145      JSR CONV_3
+0000167A  3A46                     146      MOVE.W D6,A5
+0000167C  2C4D                     147      MOVE.L A5,A6
+0000167E  DDFC 0000000F            148      ADD.L #$0F,A6
+00001684  4EF9 00001762            149      JMP MDSP_DIS
+0000168A  5849                     150  MDSP_3RANGE:    ADDQ #4,A1
+0000168C  0C19 0024                151      CMPI.B #$24,(A1)+
+00001690  6700 0008                152      BEQ GET_NEXT_ADDR3
+00001694  4EF9 00001796            153      JMP MDSP_INVALID 
+0000169A  4EB9 000027B4            154  GET_NEXT_ADDR3:    JSR GET_ADDR_ASCII
+000016A0  93C4                     155      SUB.L D4,A1
+000016A2  5549                     156      SUBQ #2,A1
+000016A4  4EB9 0000287C            157      JSR CONV_3     
+000016AA  3A46                     158      MOVE.W D6,A5
+000016AC  2A06                     159      MOVE.L D6,D5
+000016AE  D3C2                     160      ADD.L D2,A1
+000016B0  5449                     161      ADDQ #2,A1
+000016B2  4EB9 0000287C            162      JSR CONV_3
+000016B8  3C46                     163      MOVE.W D6,A6
+000016BA  4EF9 00001762            164      JMP MDSP_DIS   
+000016C0  0C03 000C                165  MDSP_4:    CMPI.B #$0C,D3
+000016C4  6E00 0018                166      BGT MDSP_4RANGE
+000016C8  4EB9 000028A6            167      JSR CONV_4
+000016CE  2A47                     168      MOVE.L D7,A5
+000016D0  2C4D                     169      MOVE.L A5,A6
+000016D2  DDFC 0000000F            170      ADD.L #$0F,A6
+000016D8  4EF9 00001762            171      JMP MDSP_DIS
+000016DE  5A49                     172  MDSP_4RANGE:    ADDQ #5,A1
+000016E0  0C19 0024                173      CMPI.B #$24,(A1)+
+000016E4  6700 0008                174      BEQ GET_NEXT_ADDR4
+000016E8  4EF9 00001796            175      JMP MDSP_INVALID 
+000016EE  4EB9 000027B4            176  GET_NEXT_ADDR4:    JSR GET_ADDR_ASCII 
+000016F4  93C4                     177      SUB.L D4,A1
+000016F6  5549                     178      SUBQ #2,A1
+000016F8  4EB9 000028A6            179      JSR CONV_4     
+000016FE  2A47                     180      MOVE.L D7,A5
+00001700  2A07                     181      MOVE.L D7,D5
+00001702  D3C2                     182      ADD.L D2,A1
+00001704  5449                     183      ADDQ #2,A1
+00001706  4EB9 000028A6            184      JSR CONV_4
+0000170C  2C47                     185      MOVE.L D7,A6
+0000170E  4EF9 00001762            186      JMP MDSP_DIS
+00001714  0C03 000C                187  MDSP_5:    CMPI.B #$0C,D3
+00001718  6E00 0018                188      BGT MDSP_5RANGE
+0000171C  4EB9 000028DE            189      JSR CONV_5
+00001722  2A47                     190      MOVE.L D7,A5
+00001724  2C4D                     191      MOVE.L A5,A6
+00001726  DDFC 0000000F            192      ADD.L #$0F,A6
+0000172C  4EF9 00001762            193      JMP MDSP_DIS
+00001732  5C49                     194  MDSP_5RANGE:    ADDQ #6,A1
+00001734  0C19 0024                195      CMPI.B #$24,(A1)+
+00001738  6700 0008                196      BEQ GET_NEXT_ADDR5
+0000173C  4EF9 00001796            197      JMP MDSP_INVALID 
+00001742  4EB9 000027B4            198  GET_NEXT_ADDR5:    JSR GET_ADDR_ASCII
+00001748  93C4                     199      SUB.L D4,A1
+0000174A  5549                     200      SUBQ #2,A1
+0000174C  4EB9 000028DE            201      JSR CONV_5     
+00001752  2A47                     202      MOVE.L D7,A5
+00001754  2A06                     203      MOVE.L D6,D5
+00001756  D3C2                     204      ADD.L D2,A1
+00001758  5449                     205      ADDQ #2,A1
+0000175A  4EB9 000028DE            206      JSR CONV_5
+00001760  2C47                     207      MOVE.L D7,A6      
+00001762  220D                     208  MDSP_DIS: MOVE.L A5,D1
+00001764  4EB9 00002704            209      JSR DISPDA
+0000176A  43F8 105E                210      LEA SPACE,A1
+0000176E  4EB9 000026F4            211      JSR DISP
+00001774  4281                     212      CLR.L D1
+00001776  121D                     213      MOVE.B (A5)+,D1
+00001778  143C 0010                214      MOVE.B #16,D2
+0000177C  103C 000F                215      MOVE.B #15,D0
+00001780  4E4F                     216      TRAP #15
+00001782  43F8 105E                217      LEA SPACE,A1
+00001786  4EB9 000026E4            218      JSR DISPCR
+0000178C  BDCD                     219      CMP.L A5,A6
+0000178E  6CD2                     220      BGE MDSP_DIS
+00001790  4EF9 000017A0            221      JMP MDSP_END
+00001796  43F8 13A9                222  MDSP_INVALID:   LEA INVALID_MSG,A1
+0000179A  4EB9 000026E4            223      JSR DISPCR
+000017A0  4CDF 7FFF                224  MDSP_END:   MOVEM.L (SP)+,D0-D7/A0-A6
+000017A4  4E75                     225      RTS
+000017A6                           226          
+000017A6                           227  SORTW:
+000017A6  48E7 FFFE                228      MOVEM.L D0-D7/A0-A6,-(SP)
+000017AA  5C49                     229      ADDQ #6,A1
+000017AC  7800                     230      MOVEQ #0,D4
+000017AE  0C19 0024                231      CMPI.B #$24,(A1)+
+000017B2  6700 0008                232      BEQ SORTW_NEXT
+000017B6  4EF9 00001946            233      JMP SORTW_INVALID
+000017BC  4EB9 000027B4            234  SORTW_NEXT: JSR GET_ADDR_ASCII
+000017C2  93C2                     235      SUB.L D2,A1
+000017C4  0C04 0003                236      CMPI.B #$03,D4
+000017C8  6700 0012                237      BEQ SORTW_DIGITS3
+000017CC  0C04 0004                238      CMPI.B #$04,D4
+000017D0  6700 0062                239      BEQ SORTW_DIGITS4
+000017D4  0C04 0005                240      CMPI.B #$05,D4
+000017D8  6700 00B2                241      BEQ SORTW_DIGITS5
+000017DC  5849                     242  SORTW_DIGITS3: ADDQ #4,A1
+000017DE  0C19 0024                243      CMPI.B #$24,(A1)+
+000017E2  6700 0008                244      BEQ SORTW_NEXT_1
+000017E6  4EF9 00001946            245      JMP SORTW_INVALID
+000017EC  4EB9 000027B4            246  SORTW_NEXT_1:    JSR GET_ADDR_ASCII
+000017F2  93C4                     247      SUB.L D4,A1
+000017F4  5549                     248      SUBQ #2,A1
+000017F6  4EB9 0000287C            249      JSR CONV_3     
+000017FC  3A46                     250      MOVE.W D6,A5
+000017FE  2C0D                     251      MOVE.L A5,D6
+00001800  7402                     252      MOVEQ #2,D2
+00001802  8CC2                     253      DIVU D2,D6
+00001804  4846                     254      SWAP.W D6
+00001806  0C46 0000                255      CMPI.W #0,D6
+0000180A  6700 0008                256      BEQ GET_NEXTADDR_3
+0000180E  4EF9 00001946            257      JMP SORTW_INVALID 
+00001814  5A49                     258  GET_NEXTADDR_3:  ADDQ #5,A1
+00001816  4EB9 0000287C            259      JSR CONV_3
+0000181C  3C46                     260      MOVE.W D6,A6
+0000181E  2C0E                     261      MOVE.L A6,D6
+00001820  7402                     262      MOVEQ #2,D2
+00001822  8CC2                     263      DIVU D2,D6
+00001824  4846                     264      SWAP.W D6
+00001826  0C46 0000                265      CMPI.W #0,D6
+0000182A  6700 00B4                266      BEQ SORTW_SETUP
+0000182E  4EF9 00001946            267      JMP SORTW_INVALID 
+00001834  5A49                     268  SORTW_DIGITS4:  ADDQ #5,A1
+00001836  0C19 0024                269      CMPI.B #$24,(A1)+
+0000183A  6700 0008                270      BEQ SORTW_NEXT_2
+0000183E  4EF9 00001946            271      JMP SORTW_INVALID
+00001844  4EB9 000027B4            272  SORTW_NEXT_2:    JSR GET_ADDR_ASCII
+0000184A  93C4                     273      SUB.L D4,A1
+0000184C  5549                     274      SUBQ #2,A1
+0000184E  4EB9 000028A6            275      JSR CONV_4     
+00001854  2A47                     276      MOVE.L D7,A5
+00001856  2C0D                     277      MOVE.L A5,D6
+00001858  7402                     278      MOVEQ #2,D2
+0000185A  8CC2                     279      DIVU D2,D6
+0000185C  4846                     280      SWAP.W D6
+0000185E  0C46 0000                281      CMPI.W #0,D6
+00001862  6700 0008                282      BEQ GET_NEXTADDR_4
+00001866  4EF9 00001946            283      JMP SORTW_INVALID 
+0000186C  5C49                     284  GET_NEXTADDR_4:    ADDQ #6,A1
+0000186E  4EB9 000028A6            285      JSR CONV_4
+00001874  2C47                     286      MOVE.L D7,A6
+00001876  2C0E                     287      MOVE.L A6,D6
+00001878  7402                     288      MOVEQ #2,D2
+0000187A  8CC2                     289      DIVU D2,D6
+0000187C  4846                     290      SWAP.W D6
+0000187E  0C46 0000                291      CMPI.W #0,D6
+00001882  6700 005C                292      BEQ SORTW_SETUP
+00001886  4EF9 00001946            293      JMP SORTW_INVALID 
+0000188C  5C49                     294  SORTW_DIGITS5:  ADDQ #6,A1
+0000188E  0C19 0024                295      CMPI.B #$24,(A1)+
+00001892  6700 0008                296      BEQ SORTW_NEXT_3
+00001896  4EF9 00001946            297      JMP SORTW_INVALID
+0000189C  4EB9 000027B4            298  SORTW_NEXT_3:    JSR GET_ADDR_ASCII
+000018A2  93C4                     299      SUB.L D4,A1
+000018A4  5549                     300      SUBQ #2,A1
+000018A6  4EB9 000028DE            301      JSR CONV_5     
+000018AC  2A47                     302      MOVE.L D7,A5
+000018AE  2C0D                     303      MOVE.L A5,D6
+000018B0  7402                     304      MOVEQ #2,D2
+000018B2  8CC2                     305      DIVU D2,D6
+000018B4  0C46 0000                306      CMPI.W #0,D6
+000018B8  6700 0008                307      BEQ GET_NEXTADDR_5
+000018BC  4EF9 00001946            308      JMP SORTW_INVALID 
+000018C2  5E49                     309  GET_NEXTADDR_5:    ADDQ #7,A1
+000018C4  4EB9 000028DE            310      JSR CONV_5
+000018CA  2C47                     311      MOVE.L D7,A6
+000018CC  2C0D                     312      MOVE.L A5,D6
+000018CE  7402                     313      MOVEQ #2,D2
+000018D0  8CC2                     314      DIVU D2,D6
+000018D2  0C46 0000                315      CMPI.W #0,D6
+000018D6  6700 0008                316      BEQ SORTW_SETUP
+000018DA  4EF9 00001946            317      JMP SORTW_INVALID 
+000018E0  0C04 0006                318  SORTW_SETUP:  CMPI.B #$06,D4
+000018E4  6700 0012                319      BEQ SORTW_DIGITS3_1
+000018E8  0C04 0008                320      CMPI.B #$08,D4
+000018EC  6700 001C                321      BEQ SORTW_DIGITS4_1
+000018F0  0C04 000A                322      CMPI.B #$0A,D4
+000018F4  6700 0026                323      BEQ SORTW_DIGITS5_1
+000018F8  5849                     324  SORTW_DIGITS3_1:   ADDQ #4,A1
+000018FA  0C11 0044                325      CMPI.B #$44,(A1)
+000018FE  6700 002E                326      BEQ GOTO_SORT_D
+00001902  0C11 0041                327      CMPI.B #$41,(A1)
+00001906  6700 0032                328      BEQ GOTO_SORT_A
+0000190A  5A49                     329  SORTW_DIGITS4_1:   ADDQ #5,A1
+0000190C  0C11 0044                330      CMPI.B #$44,(A1)
+00001910  6700 001C                331      BEQ GOTO_SORT_D
+00001914  0C11 0041                332      CMPI.B #$41,(A1)
+00001918  6700 0020                333      BEQ GOTO_SORT_A
+0000191C  5C49                     334  SORTW_DIGITS5_1:   ADDQ #6,A1
+0000191E  0C11 0044                335      CMPI.B #$44,(A1)
+00001922  6700 000A                336      BEQ GOTO_SORT_D
+00001926  0C11 0041                337      CMPI.B #$41,(A1)
+0000192A  6700 000E                338      BEQ GOTO_SORT_A
+0000192E  4EB9 00002928            339  GOTO_SORT_D:    JSR SORTW_D 
+00001934  4EF9 00001950            340      JMP SORTW_END
+0000193A  4EB9 00002950            341  GOTO_SORT_A     JSR SORTW_A
+00001940  4EF9 00001950            342      JMP SORTW_END
+00001946  43F8 13A9                343  SORTW_INVALID:  LEA INVALID_MSG,A1
+0000194A  4EB9 000026E4            344      JSR DISPCR
+00001950  4CDF 7FFF                345  SORTW_END:  MOVEM.L (SP)+,D0-D7/A0-A6
+00001954  4E75                     346      RTS
+00001956                           347  
+00001956                           348  MM:
+00001956  48E7 FFFE                349       MOVEM.L D0-D7/A0-A6,-(SP)
+0000195A  =00002C50                350  MM_BUFF EQU $2C50
+0000195A  7800                     351      MOVEQ #0,D4
+0000195C  5649                     352      ADDQ #3,A1
+0000195E  0C19 0024                353      CMPI.B #$24,(A1)+
+00001962  6700 0008                354      BEQ MM_NEXT
+00001966  4EF9 00001AE6            355      JMP MM_INVALID
+0000196C  4EB9 000027B4            356  MM_NEXT:  JSR GET_ADDR_ASCII  
+00001972  93C2                     357      SUB.L D2,A1
+00001974  0C04 0003                358      CMPI.B #$03,D4
+00001978  6700 0012                359      BEQ MM_DIGITS3
+0000197C  0C04 0004                360      CMPI.B #$04,D4
+00001980  6700 0018                361      BEQ MM_DIGITS4
+00001984  0C04 0005                362      CMPI.B #$05,D4
+00001988  6700 001E                363      BEQ MM_DIGITS5
+0000198C  4EB9 0000287C            364  MM_DIGITS3: JSR CONV_3
+00001992  3A46                     365      MOVE.W D6,A5
+00001994  4EF9 000019B6            366      JMP MM_CHECK_3
+0000199A  4EB9 000028A6            367  MM_DIGITS4: JSR CONV_4
+000019A0  2A47                     368      MOVE.L D7,A5
+000019A2  4EF9 000019C6            369      JMP MM_CHECK_4
+000019A8  4EB9 000028DE            370  MM_DIGITS5: JSR CONV_5
+000019AE  2A47                     371      MOVE.L D7,A5
+000019B0  4EF9 000019D6            372      JMP MM_CHECK_5
+000019B6  5849                     373  MM_CHECK_3:   ADDQ #4,A1
+000019B8  0C19 003B                374      CMPI.B #$3B,(A1)+
+000019BC  6700 0028                375      BEQ MM_NEXT_1
+000019C0  4EF9 00001AE6            376      JMP MM_INVALID
+000019C6  5A49                     377  MM_CHECK_4:  ADDQ #5,A1
+000019C8  0C19 003B                378      CMPI.B #$3B,(A1)+
+000019CC  6700 0018                379      BEQ MM_NEXT_1
+000019D0  4EF9 00001AE6            380      JMP MM_INVALID
+000019D6  5C49                     381  MM_CHECK_5:  ADDQ #6,A1
+000019D8  0C19 003B                382      CMPI.B #$3B,(A1)+
+000019DC  6700 0008                383      BEQ MM_NEXT_1
+000019E0  4EF9 00001AE6            384      JMP MM_INVALID
+000019E6  0C11 0042                385  MM_NEXT_1:   CMPI.B #$42,(A1)
+000019EA  6700 0012                386      BEQ MM_BYTE
+000019EE  0C11 0057                387      CMPI.B #$57,(A1)
+000019F2  6700 0054                388      BEQ MM_WORD
+000019F6  0C11 004C                389      CMPI.B #$4C,(A1)
+000019FA  6700 0096                390      BEQ MM_LONG
+000019FE  220D                     391  MM_BYTE:    MOVE.L A5,D1
+00001A00  4EB9 00002704            392      JSR DISPDA
+00001A06  43F8 105E                393      LEA SPACE,A1
+00001A0A  4EB9 000026F4            394      JSR DISP
+00001A10  4281                     395      CLR.L D1
+00001A12  1215                     396      MOVE.B (A5),D1
+00001A14  4EB9 00002704            397      JSR DISPDA
+00001A1A  43F8 105E                398      LEA SPACE,A1
+00001A1E  4EB9 000026F4            399      JSR DISP
+00001A24  43F8 2C50                400      LEA MM_BUFF,A1
+00001A28  103C 0002                401      MOVE.B #2,D0
+00001A2C  4E4F                     402      TRAP #15
+00001A2E  0C11 002E                403      CMPI.B #$2E,(A1)
+00001A32  6700 00BC                404      BEQ MM_END
+00001A36  4EB9 00002718            405      JSR GET_DATA
+00001A3C  5549                     406      SUBQ #2,A1
+00001A3E  4EB9 00002860            407      JSR CONV_2
+00001A44  1AC3                     408      MOVE.B D3,(A5)+
+00001A46  60B6                     409      BRA MM_BYTE
+00001A48  220D                     410  MM_WORD:    MOVE.L A5,D1
+00001A4A  4EB9 00002704            411      JSR DISPDA
+00001A50  43F8 105E                412      LEA SPACE,A1
+00001A54  4EB9 000026F4            413      JSR DISP
+00001A5A  4281                     414      CLR.L D1
+00001A5C  3215                     415      MOVE.W (A5),D1
+00001A5E  4EB9 00002704            416      JSR DISPDA
+00001A64  43F8 105E                417      LEA SPACE,A1
+00001A68  103C 000E                418      MOVE.B #14,D0
+00001A6C  4E4F                     419      TRAP #15
+00001A6E  43F8 2C50                420      LEA MM_BUFF,A1
+00001A72  103C 0002                421      MOVE.B #2,D0
+00001A76  4E4F                     422      TRAP #15
+00001A78  0C11 002E                423      CMPI.B #$2E,(A1)
+00001A7C  6700 0072                424      BEQ MM_END
+00001A80  4EB9 00002718            425      JSR GET_DATA
+00001A86  5949                     426      SUBQ #4,A1
+00001A88  4EB9 000028A6            427      JSR CONV_4
+00001A8E  3AC7                     428      MOVE.W D7,(A5)+
+00001A90  60B6                     429      BRA MM_WORD
+00001A92  220D                     430  MM_LONG:    MOVE.L A5,D1
+00001A94  4EB9 00002704            431      JSR DISPDA
+00001A9A  43F8 105E                432      LEA SPACE,A1
+00001A9E  4EB9 000026F4            433      JSR DISP
+00001AA4  4281                     434      CLR.L D1
+00001AA6  2215                     435      MOVE.L (A5),D1
+00001AA8  4EB9 00002704            436      JSR DISPDA
+00001AAE  43F8 105E                437      LEA SPACE,A1
+00001AB2  4EB9 000026F4            438      JSR DISP
+00001AB8  43F8 2C50                439      LEA MM_BUFF,A1
+00001ABC  103C 0002                440      MOVE.B #2,D0
+00001AC0  4E4F                     441      TRAP #15
+00001AC2  0C11 002E                442      CMPI.B #$2E,(A1)
+00001AC6  6700 0028                443      BEQ MM_END
+00001ACA  4EB9 00002718            444      JSR GET_DATA
+00001AD0  5149                     445      SUBQ #8,A1
+00001AD2  4EB9 000028A6            446      JSR CONV_4
+00001AD8  3AC7                     447      MOVE.W D7,(A5)+
+00001ADA  5849                     448      ADDQ #4,A1
+00001ADC  4EB9 000028A6            449      JSR CONV_4
+00001AE2  3AC7                     450      MOVE.W D7,(A5)+
+00001AE4  60AC                     451      BRA MM_LONG 
+00001AE6  43F8 13A9                452  MM_INVALID: LEA INVALID_MSG,A1
+00001AEA  4EB9 000026E4            453      JSR DISPCR
+00001AF0  4CDF 7FFF                454  MM_END: MOVEM.L (SP)+,D0-D7/A0-A6
+00001AF4  4E75                     455      RTS
+00001AF6                           456  
+00001AF6                           457  MS:
+00001AF6  48E7 FFFE                458      MOVEM.L D0-D7/A0-A6,-(SP)
+00001AFA  7800                     459      MOVEQ #0,D4
+00001AFC  5649                     460      ADDQ #3,A1    
+00001AFE  0C19 0024                461      CMPI.B #$24,(A1)+
+00001B02  6700 0008                462      BEQ MS_NEXT
+00001B06  4EF9 00001BC8            463      JMP MS_INVALID
+00001B0C  4EB9 000027B4            464  MS_NEXT:    JSR GET_ADDR_ASCII
+00001B12  93C2                     465      SUB.L D2,A1
+00001B14  0C04 0003                466      CMPI.B #$03,D4
+00001B18  6700 0012                467      BEQ MS_3
+00001B1C  0C04 0004                468      CMPI.B #$04,D4
+00001B20  6700 001A                469      BEQ MS_4
+00001B24  0C04 0005                470      CMPI.B #$05,D4
+00001B28  6700 0022                471      BEQ MS_5
+00001B2C  4EB9 0000287C            472  MS_3:    JSR CONV_3
+00001B32  3A46                     473      MOVE.W D6,A5
+00001B34  5849                     474      ADDQ #4,A1
+00001B36  4EF9 00001B56            475      JMP GOTODATARX
+00001B3C  4EB9 000028A6            476  MS_4:    JSR CONV_4
+00001B42  2A47                     477      MOVE.L D7,A5
+00001B44  5A49                     478      ADDQ #5,A1
+00001B46  4EF9 00001B56            479      JMP GOTODATARX
+00001B4C  4EB9 000028DE            480  MS_5:    JSR CONV_5
+00001B52  2A47                     481      MOVE.L D7,A5
+00001B54  5C49                     482      ADDQ #6,A1    
+00001B56  0C03 0012                483  GOTODATARX: CMPI.B #$12,D3
+00001B5A  6E00 005A                484      BGT PUT_ASCII     
+00001B5E  4EB9 00002718            485      JSR GET_DATA
+00001B64  0C02 0002                486      CMPI.B #$02,D2
+00001B68  6700 0012                487      BEQ MS_BYTE
+00001B6C  0C02 0004                488      CMPI.B #$04,D2
+00001B70  6700 001A                489      BEQ MS_WORD
+00001B74  0C02 0008                490      CMPI.B #$08,D2
+00001B78  6700 0022                491      BEQ MS_LONG
+00001B7C  5549                     492  MS_BYTE: SUBQ #2,A1
+00001B7E  4EB9 00002860            493      JSR CONV_2
+00001B84  1A83                     494      MOVE.B D3,(A5)
+00001B86  4EF9 00001BD2            495      JMP MS_END
+00001B8C  5949                     496  MS_WORD: SUBQ #4,A1
+00001B8E  4EB9 000028A6            497      JSR CONV_4
+00001B94  3A87                     498      MOVE.W D7,(A5)
+00001B96  4EF9 00001BD2            499      JMP MS_END
+00001B9C  5149                     500  MS_LONG: SUBQ #8,A1
+00001B9E  4EB9 000028A6            501      JSR CONV_4
+00001BA4  3AC7                     502      MOVE.W D7,(A5)+
+00001BA6  5849                     503      ADDQ #4,A1
+00001BA8  4EB9 000028A6            504      JSR CONV_4
+00001BAE  3A87                     505      MOVE.W D7,(A5)
+00001BB0  4EF9 00001BD2            506      JMP MS_END
+00001BB6  1AD9                     507  PUT_ASCII:  MOVE.B (A1)+,(A5)+
+00001BB8  0C11 0000                508      CMPI.B #$00,(A1)
+00001BBC  66F8                     509      BNE PUT_ASCII
+00001BBE  1ABC 0000                510      MOVE.B #$00,(A5)
+00001BC2  4EF9 00001BD2            511      JMP MS_END
+00001BC8  43F8 13A9                512  MS_INVALID: LEA INVALID_MSG,A1
+00001BCC  4EB9 000026E4            513      JSR DISPCR
+00001BD2  4CDF 7FFF                514  MS_END: MOVEM.L (SP)+,D0-D7/A0-A6
+00001BD6  4E75                     515      RTS
+00001BD8                           516  
+00001BD8                           517  BF:
+00001BD8  48E7 FFFE                518      MOVEM.L D0-D7/A0-A6,-(SP)
+00001BDC  5649                     519      ADDQ #3,A1  
+00001BDE  7800                     520      MOVEQ #0,D4
+00001BE0  0C19 0024                521      CMPI.B #$24,(A1)+
+00001BE4  6700 0008                522      BEQ BF_NEXT
+00001BE8  4EF9 00001D64            523      JMP BF_INVALID  
+00001BEE  4EB9 000027B4            524  BF_NEXT:    JSR GET_ADDR_ASCII
+00001BF4  93C2                     525      SUB.L D2,A1
+00001BF6  0C04 0003                526      CMPI.B #$03,D4
+00001BFA  6700 0012                527      BEQ BF_DIGITS3
+00001BFE  0C04 0004                528      CMPI.B #$04,D4
+00001C02  6700 0064                529      BEQ BF_DIGITS4
+00001C06  0C04 0005                530      CMPI.B #$05,D4
+00001C0A  6700 00B6                531      BEQ BF_DIGITS5
+00001C0E  5849                     532  BF_DIGITS3: ADDQ #4,A1
+00001C10  0C19 0024                533      CMPI.B #$24,(A1)+
+00001C14  6700 0008                534      BEQ BFNEXT1
+00001C18  4EF9 00001D64            535      JMP BF_INVALID
+00001C1E  4EB9 000027B4            536  BFNEXT1:    JSR GET_ADDR_ASCII
+00001C24  93C4                     537      SUB.L D4,A1
+00001C26  5549                     538      SUBQ #2,A1
+00001C28  4EB9 0000287C            539      JSR CONV_3     
+00001C2E  3A46                     540      MOVE.W D6,A5
+00001C30  2C0D                     541      MOVE.L A5,D6
+00001C32  7402                     542      MOVEQ #2,D2
+00001C34  8CC2                     543      DIVU D2,D6
+00001C36  4846                     544      SWAP.W D6
+00001C38  0C06 0000                545      CMPI.B #$00,D6
+00001C3C  6700 0008                546      BEQ GET_NEXT_ADDR_3
+00001C40  4EF9 00001D64            547      JMP BF_INVALID 
+00001C46  D3C2                     548  GET_NEXT_ADDR_3:    ADD.L D2,A1
+00001C48  5649                     549      ADDQ #3,A1
+00001C4A  4EB9 0000287C            550      JSR CONV_3
+00001C50  3C46                     551      MOVE.W D6,A6
+00001C52  2C0E                     552      MOVE.L A6,D6
+00001C54  7402                     553      MOVEQ #2,D2
+00001C56  8CC2                     554      DIVU D2,D6
+00001C58  4846                     555      SWAP.W D6
+00001C5A  0C06 0000                556      CMPI.B #$00,D6
+00001C5E  6700 00E8                557      BEQ BF_SKIP_3DIG
+00001C62  4EF9 00001D64            558      JMP BF_INVALID 
+00001C68  5A49                     559  BF_DIGITS4: ADDQ #5,A1
+00001C6A  0C19 0024                560      CMPI.B #$24,(A1)+
+00001C6E  6700 0008                561      BEQ BFNEXT2
+00001C72  4EF9 00001D64            562      JMP BF_INVALID
+00001C78  4EB9 000027B4            563  BFNEXT2:    JSR GET_ADDR_ASCII
+00001C7E  93C4                     564      SUB.L D4,A1
+00001C80  5549                     565      SUBQ #2,A1
+00001C82  4EB9 000028A6            566      JSR CONV_4     
+00001C88  2A47                     567      MOVE.L D7,A5
+00001C8A  2C0D                     568      MOVE.L A5,D6
+00001C8C  7402                     569      MOVEQ #2,D2
+00001C8E  8CC2                     570      DIVU D2,D6
+00001C90  4846                     571      SWAP.W D6
+00001C92  0C46 0000                572      CMPI #0,D6
+00001C96  6700 0008                573      BEQ GET_NEXT_ADDR_4
+00001C9A  4EF9 00001D64            574      JMP BF_INVALID 
+00001CA0  D3C2                     575  GET_NEXT_ADDR_4:    ADD.L D2,A1
+00001CA2  5849                     576      ADDQ #4,A1
+00001CA4  4EB9 000028A6            577      JSR CONV_4
+00001CAA  2C47                     578      MOVE.L D7,A6
+00001CAC  2C0E                     579      MOVE.L A6,D6
+00001CAE  7402                     580      MOVEQ #2,D2
+00001CB0  8CC2                     581      DIVU D2,D6
+00001CB2  4846                     582      SWAP.W D6
+00001CB4  0C46 0000                583      CMPI #0,D6
+00001CB8  6700 0078                584      BEQ BF_SKIP_4DIG
+00001CBC  4EF9 00001D64            585      JMP BF_INVALID 
+00001CC2  5C49                     586  BF_DIGITS5: ADDQ #6,A1
+00001CC4  0C19 0024                587      CMPI.B #$24,(A1)+
+00001CC8  6700 0008                588      BEQ BFNEXT3
+00001CCC  4EF9 00001D64            589      JMP BF_INVALID
+00001CD2  4EB9 000027B4            590  BFNEXT3:    JSR GET_ADDR_ASCII
+00001CD8  93C4                     591      SUB.L D4,A1
+00001CDA  5549                     592      SUBQ #2,A1
+00001CDC  4EB9 000028DE            593      JSR CONV_5     
+00001CE2  2A47                     594      MOVE.L D7,A5
+00001CE4  3C0D                     595      MOVE.W A5,D6
+00001CE6  7402                     596      MOVEQ #2,D2
+00001CE8  8CC2                     597      DIVU D2,D6
+00001CEA  4846                     598      SWAP.W D6
+00001CEC  0C06 0000                599      CMPI.B #$00,D6
+00001CF0  6700 0008                600      BEQ GET_NEXT_ADDR_5
+00001CF4  4EF9 00001D64            601      JMP BF_INVALID 
+00001CFA  D3C2                     602  GET_NEXT_ADDR_5:    ADD.L D2,A1
+00001CFC  5A49                     603      ADDQ #5,A1
+00001CFE  4EB9 000028DE            604      JSR CONV_5
+00001D04  2C47                     605      MOVE.L D7,A6
+00001D06  3C0E                     606      MOVE.W A6,D6
+00001D08  7402                     607      MOVEQ #2,D2
+00001D0A  8CC2                     608      DIVU D2,D6
+00001D0C  4846                     609      SWAP.W D6
+00001D0E  0C06 0000                610      CMPI.B #$00,D6
+00001D12  6700 0008                611      BEQ BF_SKIP_5DIG
+00001D16  4EF9 00001D64            612      JMP BF_INVALID 
+00001D1C  5C49                     613  BF_SKIP_5DIG:    ADDQ #6,A1
+00001D1E  4EB9 00002718            614      JSR GET_DATA
+00001D24  5949                     615      SUBQ #4,A1
+00001D26  4EB9 000028A6            616      JSR CONV_4
+00001D2C  4EF9 00001D58            617      JMP BFAG
+00001D32  5A49                     618  BF_SKIP_4DIG:    ADDQ #5,A1
+00001D34  4EB9 00002718            619      JSR GET_DATA
+00001D3A  5949                     620      SUBQ #4,A1
+00001D3C  4EB9 000028A6            621      JSR CONV_4
+00001D42  4EF9 00001D58            622      JMP BFAG
+00001D48  5849                     623  BF_SKIP_3DIG:  ADDQ #4,A1
+00001D4A  4EB9 00002718            624      JSR GET_DATA
+00001D50  5949                     625      SUBQ #4,A1
+00001D52  4EB9 000028A6            626      JSR CONV_4
+00001D58  3AC7                     627  BFAG:    MOVE.W D7,(A5)+
+00001D5A  BBCE                     628      CMP.L A6,A5
+00001D5C  6FFA                     629      BLE BFAG
+00001D5E  4EF9 00001D6E            630      JMP BF_END
+00001D64  43F8 13A9                631  BF_INVALID: LEA INVALID_MSG,A1
+00001D68  4EB9 000026E4            632      JSR DISPCR
+00001D6E  4CDF 7FFF                633  BF_END:    MOVEM.L (SP)+,D0-D7/A0-A6
+00001D72  4E75                     634      RTS
+00001D74                           635  
+00001D74                           636  BTST:
+00001D74  48E7 FFFE                637      MOVEM.L D0-D7/A0-A6,-(SP)
+00001D78  7800                     638      MOVEQ #0,D4
+00001D7A  5A49                     639      ADDQ #5,A1
+00001D7C  0C19 0024                640      CMPI.B #$24,(A1)+
+00001D80  6700 0008                641      BEQ BTST_NEXT
+00001D84  4EF9 00001EE8            642      JMP BTST_INVALID
+00001D8A  4EB9 000027B4            643  BTST_NEXT: JSR GET_ADDR_ASCII
+00001D90  93C2                     644      SUB.L D2,A1
+00001D92  0C04 0003                645      CMPI.B #$03,D4
+00001D96  6700 0012                646      BEQ BTST_DIGITS3
+00001D9A  0C04 0004                647      CMPI.B #$04,D4
+00001D9E  6700 0040                648      BEQ BTST_DIGITS4
+00001DA2  0C04 0005                649      CMPI.B #$05,D4
+00001DA6  6700 006E                650      BEQ BTST_DIGITS5
+00001DAA  5849                     651  BTST_DIGITS3: ADDQ #4,A1
+00001DAC  0C19 0024                652      CMPI.B #$24,(A1)+
+00001DB0  6700 0008                653      BEQ BTST_NEXT_1
+00001DB4  4EF9 00001EE8            654      JMP BTST_INVALID
+00001DBA  4EB9 000027B4            655  BTST_NEXT_1:    JSR GET_ADDR_ASCII
+00001DC0  93C4                     656      SUB.L D4,A1
+00001DC2  5549                     657      SUBQ #2,A1
+00001DC4  4EB9 0000287C            658      JSR CONV_3     
+00001DCA  3A46                     659      MOVE.W D6,A5
+00001DCC  2A06                     660      MOVE.L D6,D5
+00001DCE  D3C2                     661      ADD.L D2,A1
+00001DD0  5449                     662      ADDQ #2,A1
+00001DD2  4EB9 0000287C            663      JSR CONV_3
+00001DD8  3C46                     664      MOVE.W D6,A6
+00001DDA  4EF9 00001E46            665      JMP BTST_BEG
+00001DE0  5A49                     666  BTST_DIGITS4: ADDQ #5,A1
+00001DE2  0C19 0024                667      CMPI.B #$24,(A1)+
+00001DE6  6700 0008                668      BEQ BTST_NEXT_2
+00001DEA  4EF9 00001EE8            669      JMP BTST_INVALID
+00001DF0  4EB9 000027B4            670  BTST_NEXT_2:    JSR GET_ADDR_ASCII
+00001DF6  93C4                     671      SUB.L D4,A1
+00001DF8  5549                     672      SUBQ #2,A1
+00001DFA  4EB9 000028A6            673      JSR CONV_4     
+00001E00  2A47                     674      MOVE.L D7,A5
+00001E02  2A07                     675      MOVE.L D7,D5
+00001E04  D3C2                     676      ADD.L D2,A1
+00001E06  5449                     677      ADDQ #2,A1
+00001E08  4EB9 000028A6            678      JSR CONV_4
+00001E0E  2C47                     679      MOVE.L D7,A6
+00001E10  4EF9 00001E46            680      JMP BTST_BEG
+00001E16  5C49                     681  BTST_DIGITS5: ADDQ #6,A1
+00001E18  0C19 0024                682      CMPI.B #$24,(A1)+
+00001E1C  6700 0008                683      BEQ BTST_NEXT_3
+00001E20  4EF9 00001EE8            684      JMP BTST_INVALID
+00001E26  4EB9 000027B4            685  BTST_NEXT_3:    JSR GET_ADDR_ASCII
+00001E2C  93C4                     686      SUB.L D4,A1
+00001E2E  5549                     687      SUBQ #2,A1
+00001E30  4EB9 000028DE            688      JSR CONV_5     
+00001E36  2A47                     689      MOVE.L D7,A5
+00001E38  2A07                     690      MOVE.L D7,D5
+00001E3A  D3C2                     691      ADD.L D2,A1
+00001E3C  5449                     692      ADDQ #2,A1
+00001E3E  4EB9 000028DE            693      JSR CONV_5
+00001E44  2C47                     694      MOVE.L D7,A6
+00001E46  1AFC 00FF                695  BTST_BEG:   MOVE.B #$FF,(A5)+
+00001E4A  BDCD                     696      CMP.L A5,A6
+00001E4C  6CF8                     697      BGE BTST_BEG
+00001E4E  2A45                     698      MOVE.L D5,A5
+00001E50  101D                     699  BTST_READ:    MOVE.B (A5)+,D0
+00001E52  0C00 00FF                700      CMPI.B #$FF,D0
+00001E56  6700 0008                701      BEQ BTST_READ_CONTINUE
+00001E5A  4EF9 00001E84            702      JMP BTST_ERR
+00001E60  BDCD                     703  BTST_READ_CONTINUE: CMP.L A5,A6 
+00001E62  6CEC                     704      BGE BTST_READ    
+00001E64  4EF9 00001E6A            705      JMP BTST_NOERR
+00001E6A  2A45                     706  BTST_NOERR: MOVE.L D5,A5
+00001E6C  1AFC 0000                707  BTSTSET:    MOVE.B #$00,(A5)+
+00001E70  BDCD                     708      CMP.L A5,A6
+00001E72  6CF8                     709      BGE BTSTSET
+00001E74  43F8 1309                710      LEA BTSTMSG_1,A1
+00001E78  4EB9 000026E4            711      JSR DISPCR
+00001E7E  4EF9 00001EF2            712      JMP BTST_END    
+00001E84  43F8 132B                713  BTST_ERR:   LEA BTSTMSG_2,A1
+00001E88  4EB9 000026E4            714      JSR DISPCR
+00001E8E  43F8 1351                715      LEA BTSTMSG_5,A1
+00001E92  4EB9 000026F4            716      JSR DISP
+00001E98  4281                     717      CLR.L D1
+00001E9A  534D                     718      SUBQ #1,A5
+00001E9C  220D                     719      MOVE.L A5,D1
+00001E9E  4EB9 00002704            720      JSR DISPDA
+00001EA4  43F8 105E                721      LEA SPACE,A1
+00001EA8  4EB9 000026E4            722      JSR DISPCR
+00001EAE  43F8 1341                723      LEA BTSTMSG_4,A1
+00001EB2  4EB9 000026F4            724      JSR DISP
+00001EB8  4281                     725      CLR.L D1
+00001EBA  1215                     726      MOVE.B (A5),D1
+00001EBC  4EB9 00002704            727      JSR DISPDA
+00001EC2  43F8 105E                728      LEA SPACE,A1
+00001EC6  4EB9 000026E4            729      JSR DISPCR
+00001ECC  43F8 1331                730      LEA BTSTMSG_3,A1
+00001ED0  4EB9 000026F4            731      JSR DISP
+00001ED6  4281                     732      CLR.L D1
+00001ED8  123C 00FF                733      MOVE.B #$FF,D1
+00001EDC  4EB9 00002704            734      JSR DISPDA
+00001EE2  4EF9 00001EF2            735      JMP BTST_END    
+00001EE8  43F8 13A9                736  BTST_INVALID: LEA INVALID_MSG,A1
+00001EEC  4EB9 000026E4            737      JSR DISPCR
+00001EF2  4CDF 7FFF                738  BTST_END:   MOVEM.L (SP)+,D0-D7/A0-A6
+00001EF6  4E75                     739      RTS
+00001EF8                           740  
+00001EF8                           741  BMOV:
+00001EF8  48E7 FFFE                742      MOVEM.L D0-D7/A0-A6,-(SP)
+00001EFC  7800                     743      MOVEQ #0,D4
+00001EFE  5A49                     744      ADDQ #5,A1
+00001F00  0C19 0024                745      CMPI.B #$24,(A1)+
+00001F04  6700 0008                746      BEQ BMOV_NEXT
+00001F08  4EF9 00002012            747      JMP BMOV_INVALID
+00001F0E  4EB9 000027B4            748  BMOV_NEXT:  JSR GET_ADDR_ASCII
+00001F14  93C2                     749      SUB.L D2,A1
+00001F16  0C04 0003                750      CMPI.B #$03,D4
+00001F1A  6700 0012                751      BEQ BMOV_DIGITS3
+00001F1E  0C04 0004                752      CMPI.B #$04,D4
+00001F22  6700 003E                753      BEQ BMOV_DIGITS4
+00001F26  0C04 0005                754      CMPI.B #$05,D4
+00001F2A  6700 006A                755      BEQ BMOV_DIGITS5
+00001F2E  5849                     756  BMOV_DIGITS3: ADDQ #4,A1
+00001F30  0C19 0024                757      CMPI.B #$24,(A1)+
+00001F34  6700 0008                758      BEQ BMOV_NEXT_1
+00001F38  4EF9 00002012            759      JMP BMOV_INVALID
+00001F3E  4EB9 000027B4            760  BMOV_NEXT_1:    JSR GET_ADDR_ASCII
+00001F44  93C4                     761      SUB.L D4,A1
+00001F46  5549                     762      SUBQ #2,A1
+00001F48  4EB9 0000287C            763      JSR CONV_3     
+00001F4E  3A46                     764      MOVE.W D6,A5
+00001F50  D3C2                     765      ADD.L D2,A1
+00001F52  5449                     766      ADDQ #2,A1
+00001F54  4EB9 0000287C            767      JSR CONV_3
+00001F5A  3C46                     768      MOVE.W D6,A6
+00001F5C  4EF9 00001FC4            769      JMP GETNOOFBYTES
+00001F62  5A49                     770  BMOV_DIGITS4: ADDQ #5,A1
+00001F64  0C19 0024                771      CMPI.B #$24,(A1)+
+00001F68  6700 0008                772      BEQ BMOV_NEXT_2
+00001F6C  4EF9 00002012            773      JMP BMOV_INVALID
+00001F72  4EB9 000027B4            774  BMOV_NEXT_2:    JSR GET_ADDR_ASCII
+00001F78  93C4                     775      SUB.L D4,A1
+00001F7A  5549                     776      SUBQ #2,A1
+00001F7C  4EB9 000028A6            777      JSR CONV_4     
+00001F82  2A47                     778      MOVE.L D7,A5
+00001F84  D3C2                     779      ADD.L D2,A1
+00001F86  5449                     780      ADDQ #2,A1
+00001F88  4EB9 000028A6            781      JSR CONV_4
+00001F8E  2C47                     782      MOVE.L D7,A6
+00001F90  4EF9 00001FC4            783      JMP GETNOOFBYTES
+00001F96  5C49                     784  BMOV_DIGITS5:   ADDQ #6,A1
+00001F98  0C19 0024                785      CMP.B #$24,(A1)+
+00001F9C  6700 0008                786      BEQ BMOV_NEXT_3
+00001FA0  4EF9 00002012            787      JMP BMOV_INVALID
+00001FA6  4EB9 000027B4            788  BMOV_NEXT_3:    JSR GET_ADDR_ASCII
+00001FAC  93C4                     789      SUB.L D4,A1
+00001FAE  5549                     790      SUBQ #2,A1
+00001FB0  4EB9 000028DE            791      JSR CONV_5     
+00001FB6  2A47                     792      MOVE.L D7,A5
+00001FB8  D3C2                     793      ADD.L D2,A1
+00001FBA  5449                     794      ADDQ #2,A1
+00001FBC  4EB9 000028DE            795      JSR CONV_5
+00001FC2  2C47                     796      MOVE.L D7,A6
+00001FC4  0C04 0006                797  GETNOOFBYTES:   CMPI.B #$06,D4
+00001FC8  6700 0012                798      BEQ A1UPDATE3
+00001FCC  0C04 0008                799      CMPI.B #$08,D4
+00001FD0  6700 0018                800      BEQ A1UPDATE4
+00001FD4  0C04 000A                801      CMPI.B #$0A,D4
+00001FD8  6700 001E                802      BEQ A1UPDATE5
+00001FDC  5849                     803  A1UPDATE3:    ADDQ #4,A1
+00001FDE  4EB9 00002978            804      JSR GET_DEC
+00001FE4  4EF9 00002006            805      JMP BMOV_AG
+00001FEA  5A49                     806  A1UPDATE4:    ADDQ #5,A1
+00001FEC  4EB9 00002978            807      JSR GET_DEC
+00001FF2  4EF9 00002006            808      JMP BMOV_AG
+00001FF8  5C49                     809  A1UPDATE5:    ADDQ #6,A1
+00001FFA  4EB9 00002978            810      JSR GET_DEC
+00002000  4EF9 00002006            811      JMP BMOV_AG
+00002006  1CDD                     812  BMOV_AG:    MOVE.B (A5)+,(A6)+
+00002008  57CE FFFC                813      DBEQ D6,BMOV_AG
+0000200C  4EF9 0000201C            814      JMP BMOV_END
+00002012  43F8 13A9                815  BMOV_INVALID: LEA INVALID_MSG,A1
+00002016  4EB9 000026E4            816     JSR DISPCR
+0000201C  4CDF 7FFF                817  BMOV_END:   MOVEM.L (SP)+,D0-D7/A0-A6
+00002020  4E75                     818      RTS
+00002022                           819  
+00002022                           820  BSCH:
+00002022  48E7 FFFE                821      MOVEM.L D0-D7/A0-A6,-(SP)
+00002026  7800                     822      MOVEQ #0,D4
+00002028  5A49                     823      ADDQ #5,A1
+0000202A  0C19 0024                824      CMPI.B #$24,(A1)+
+0000202E  6700 0008                825      BEQ BSCH_NEXT
+00002032  4EF9 0000216C            826      JMP BSCH_INVALID
+00002038  4EB9 000027B4            827  BSCH_NEXT:    JSR GET_ADDR_ASCII
+0000203E  93C2                     828      SUB.L D2,A1
+00002040  0C04 0003                829      CMPI.B #$03,D4
+00002044  6700 0012                830      BEQ BSCH_DIGITS3
+00002048  0C04 0004                831      CMPI.B #$04,D4
+0000204C  6700 0044                832      BEQ BSCH_DIGITS4
+00002050  0C04 0005                833      CMPI.B #$05,D4
+00002054  6700 0072                834      BEQ BSCH_DIGITS5
+00002058  5849                     835  BSCH_DIGITS3:    ADDQ #4,A1
+0000205A  0C19 0024                836      CMPI.B #$24,(A1)+
+0000205E  6700 0008                837      BEQ BSCH_NEXT_1
+00002062  4EF9 0000216C            838      JMP BSCH_INVALID
+00002068  4EB9 000027B4            839  BSCH_NEXT_1:    JSR GET_ADDR_ASCII
+0000206E  93C4                     840      SUB.L D4,A1
+00002070  5549                     841      SUBQ #2,A1
+00002072  4EB9 0000287C            842      JSR CONV_3     
+00002078  3A46                     843      MOVE.W D6,A5
+0000207A  2E06                     844      MOVE.L D6,D7
+0000207C  2A06                     845      MOVE.L D6,D5
+0000207E  D3C2                     846      ADD.L D2,A1
+00002080  5449                     847      ADDQ #2,A1
+00002082  4EB9 0000287C            848      JSR CONV_3
+00002088  3C46                     849      MOVE.W D6,A6
+0000208A  2E06                     850      MOVE.L D6,D7
+0000208C  4EF9 000020F8            851      JMP BSCH_CHECK
+00002092  5A49                     852  BSCH_DIGITS4:    ADDQ #5,A1
+00002094  0C19 0024                853      CMPI.B #$24,(A1)+
+00002098  6700 0008                854      BEQ BSCH_NEXT_2
+0000209C  4EF9 0000216C            855      JMP BSCH_INVALID
+000020A2  4EB9 000027B4            856  BSCH_NEXT_2:    JSR GET_ADDR_ASCII
+000020A8  93C4                     857      SUB.L D4,A1
+000020AA  5549                     858      SUBQ #2,A1
+000020AC  4EB9 000028A6            859      JSR CONV_4
+000020B2  2A47                     860      MOVE.L D7,A5
+000020B4  2A07                     861      MOVE.L D7,D5
+000020B6  D3C2                     862      ADD.L D2,A1
+000020B8  5449                     863      ADDQ #2,A1
+000020BA  4EB9 000028A6            864      JSR CONV_4
+000020C0  2C47                     865      MOVE.L D7,A6
+000020C2  4EF9 000020F8            866      JMP BSCH_CHECK
+000020C8  5C49                     867  BSCH_DIGITS5:    ADDQ #6,A1
+000020CA  0C19 0024                868      CMPI.B #$24,(A1)+
+000020CE  6700 0008                869      BEQ BSCH_NEXT_3
+000020D2  4EF9 0000216C            870      JMP BSCH_INVALID
+000020D8  4EB9 000027B4            871  BSCH_NEXT_3:    JSR GET_ADDR_ASCII
+000020DE  93C4                     872      SUB.L D4,A1
+000020E0  5549                     873      SUBQ #2,A1
+000020E2  4EB9 000028DE            874      JSR CONV_5    
+000020E8  2A47                     875      MOVE.L D7,A5
+000020EA  2A07                     876      MOVE.L D7,D5
+000020EC  D3C2                     877      ADD.L D2,A1
+000020EE  5449                     878      ADDQ #2,A1
+000020F0  4EB9 000028DE            879      JSR CONV_5
+000020F6  2C47                     880      MOVE.L D7,A6
+000020F8  0C04 0006                881  BSCH_CHECK: CMPI.B #$06,D4
+000020FC  6700 0012                882      BEQ BSCH_DIGITS3_1
+00002100  0C04 0008                883      CMPI.B #$08,D4
+00002104  6700 0012                884      BEQ BSCH_DIGITS4_1
+00002108  0C04 000A                885      CMPI.B #$0A,D4
+0000210C  6700 0012                886      BEQ BSCH_DIGITS5_1
+00002110  5849                     887  BSCH_DIGITS3_1:    ADDQ #4,A1
+00002112  4EF9 00002122            888      JMP BSCH_AG_BEG
+00002118  5A49                     889  BSCH_DIGITS4_1:    ADDQ #5,A1
+0000211A  4EF9 00002122            890      JMP BSCH_AG_BEG
+00002120  5C49                     891  BSCH_DIGITS5_1:    ADDQ #6,A1
+00002122  7C00                     892  BSCH_AG_BEG:   MOVEQ #0,D6 
+00002124  5246                     893  GET_LENGTH:    ADDQ #1,D6
+00002126  0C19 0000                894      CMPI.B #$00,(A1)+
+0000212A  66F8                     895      BNE GET_LENGTH
+0000212C  0C11 00FF                896      CMPI.B #$FF,(A1)
+00002130  6700 0004                897      BEQ BSCH_PROCEED
+00002134  60EE                     898      BRA GET_LENGTH
+00002136  93C6                     899  BSCH_PROCEED:    SUB.L D6,A1
+00002138  5346                     900      SUBQ #1,D6
+0000213A  BB09                     901  BSCH_AG:    CMP.B (A1)+,(A5)+
+0000213C  6700 0010                902      BEQ BSCH_CHECK_NEXT
+00002140  5349                     903      SUBQ #1,A1
+00002142  5245                     904      ADDQ #1,D5
+00002144  BDCD                     905      CMP.L A5,A6
+00002146  6CF2                     906      BGE BSCH_AG
+00002148  4EF9 0000215C            907      JMP BSCH_NOTFOUND
+0000214E  5346                     908  BSCH_CHECK_NEXT:    SUBQ #1,D6
+00002150  0C06 0000                909      CMPI.B #0,D6
+00002154  66E4                     910      BNE BSCH_AG
+00002156  4EF9 0000217C            911      JMP BSCH_DISPLAY 
+0000215C  43F8 12E7                912  BSCH_NOTFOUND:  LEA BSCHMSG_3,A1
+00002160  4EB9 000026E4            913      JSR DISPCR
+00002166  4EF9 000021B0            914      JMP BSCH_END   
+0000216C  43F8 13A9                915  BSCH_INVALID: LEA INVALID_MSG,A1
+00002170  103C 000E                916      MOVE.B #14,D0
+00002174  4E4F                     917      TRAP #15
+00002176  4EF9 000021B0            918      JMP BSCH_END
+0000217C  43F8 12DD                919  BSCH_DISPLAY:   LEA BSCHMSG_1,A1
+00002180  4EB9 000026F4            920      JSR DISP
+00002186  2245                     921      MOVE.L D5,A1
+00002188  4EB9 000026E4            922      JSR DISPCR
+0000218E  43F8 12D3                923      LEA BSCHMSG_2,A1
+00002192  4EB9 000026F4            924      JSR DISP
+00002198  2205                     925      MOVE.L D5,D1
+0000219A  4EB9 00002704            926      JSR DISPDA
+000021A0  43F8 105E                927      LEA SPACE,A1
+000021A4  4EB9 000026E4            928      JSR DISPCR
+000021AA  4EF9 000021B0            929      JMP BSCH_END
+000021B0  4CDF 7FFF                930  BSCH_END:    MOVEM.L (SP)+,D0-D7/A0-A6
+000021B4  4E75                     931      RTS
+000021B6                           932  
+000021B6                           933  GO:
+000021B6  48E7 FFFE                934      MOVEM.L D0-D7/A0-A6,-(SP)
+000021BA  7800                     935      MOVEQ #0,D4
+000021BC  5649                     936      ADDQ #3,A1
+000021BE  0C19 0024                937      CMPI.B #$24,(A1)+
+000021C2  6700 0008                938      BEQ GO_NEXT
+000021C6  4EF9 00002202            939      JMP GO_INVALID
+000021CC  4EB9 000027B4            940  GO_NEXT:    JSR GET_ADDR_ASCII    
+000021D2  93C2                     941      SUB.L D2,A1
+000021D4  0C04 0003                942      CMPI.B #$03,D4
+000021D8  6700 000A                943      BEQ GO_3
+000021DC  0C04 0004                944      CMPI.B #$04,D4
+000021E0  6700 000E                945      BEQ GO_4
+000021E4  4EB9 0000287C            946  GO_3:    JSR CONV_3
+000021EA  3A46                     947      MOVE.W D6,A5
+000021EC  6100 000E                948      BSR GO_TO_ADDR
+000021F0  4EB9 000028A6            949  GO_4:   JSR CONV_4
+000021F6  2A47                     950      MOVE.L D7,A5
+000021F8  6100 0002                951      BSR GO_TO_ADDR 
+000021FC  3F4D 0002                952  GO_TO_ADDR: MOVE.W A5,(2,SP)
+00002200  4E75                     953      RTS
+00002202  43F8 13A9                954  GO_INVALID: LEA INVALID_MSG,A1
+00002206  4EB9 000026E4            955      JSR DISPCR
+0000220C  4CDF 7FFF                956  GO_END: MOVEM.L (SP)+,D0-D7/A0-A6
+00002210  4E75                     957      RTS
+00002212                           958       
+00002212                           959  DF: 
+00002212  48E7 FFFF                960      MOVEM.L D0-D7/A0-A7,-(SP)
+00002216  43F8 14E0                961      LEA DATAREG_0,A1
+0000221A  4EB9 000026F4            962      JSR DISP
+00002220  2217                     963      MOVE.L (SP),D1
+00002222  4EB9 00002704            964      JSR DISPDA
+00002228  43F8 105E                965      LEA SPACE,A1
+0000222C  4EB9 000026F4            966      JSR DISP
+00002232  43F8 14E6                967      LEA DATAREG_1,A1
+00002236  4EB9 000026F4            968      JSR DISP
+0000223C  588F                     969      ADD.L #$4,SP
+0000223E  2217                     970      MOVE.L (SP),D1
+00002240  4EB9 00002704            971      JSR DISPDA
+00002246  43F8 105E                972      LEA SPACE,A1
+0000224A  4EB9 000026F4            973      JSR DISP
+00002250  43F8 14EC                974      LEA DATAREG_2,A1
+00002254  4EB9 000026F4            975      JSR DISP
+0000225A  588F                     976      ADD.L #$4,SP
+0000225C  2217                     977      MOVE.L (SP),D1
+0000225E  4EB9 00002704            978      JSR DISPDA
+00002264  43F8 105E                979      LEA SPACE,A1
+00002268  4EB9 000026F4            980      JSR DISP
+0000226E  43F8 14F2                981      LEA DATAREG_3,A1
+00002272  4EB9 000026F4            982      JSR DISP
+00002278  588F                     983      ADD.L #$4,SP
+0000227A  2217                     984      MOVE.L (SP),D1
+0000227C  4EB9 00002704            985      JSR DISPDA
+00002282  43F8 105E                986      LEA SPACE,A1
+00002286  4EB9 000026E4            987      JSR DISPCR
+0000228C  43F8 14F8                988      LEA DATAREG_4,A1
+00002290  4EB9 000026F4            989      JSR DISP
+00002296  588F                     990      ADD.L #$4,SP
+00002298  2217                     991      MOVE.L (SP),D1
+0000229A  4EB9 00002704            992      JSR DISPDA
+000022A0  43F8 105E                993      LEA SPACE,A1
+000022A4  4EB9 000026F4            994      JSR DISP
+000022AA  43F8 14FE                995      LEA DATAREG_5,A1
+000022AE  4EB9 000026F4            996      JSR DISP
+000022B4  588F                     997      ADD.L #$4,SP
+000022B6  2217                     998      MOVE.L (SP),D1
+000022B8  4EB9 00002704            999      JSR DISPDA
+000022BE  43F8 105E               1000      LEA SPACE,A1
+000022C2  4EB9 000026F4           1001      JSR DISP
+000022C8  43F8 1504               1002      LEA DATAREG_6,A1
+000022CC  4EB9 000026F4           1003      JSR DISP
+000022D2  588F                    1004      ADD.L #$4,SP
+000022D4  2217                    1005      MOVE.L (SP),D1
+000022D6  4EB9 00002704           1006      JSR DISPDA
+000022DC  43F8 105E               1007      LEA SPACE,A1
+000022E0  4EB9 000026F4           1008      JSR DISP
+000022E6  43F8 150A               1009      LEA DATAREG_7,A1
+000022EA  4EB9 000026F4           1010      JSR DISP
+000022F0  588F                    1011      ADD.L #$4,SP
+000022F2  2217                    1012      MOVE.L (SP),D1
+000022F4  4EB9 00002704           1013      JSR DISPDA
+000022FA  43F8 105E               1014      LEA SPACE,A1
+000022FE  4EB9 000026E4           1015      JSR DISPCR
+00002304  43F8 14B0               1016      LEA ADDRREG_0,A1
+00002308  4EB9 000026F4           1017      JSR DISP
+0000230E  588F                    1018      ADD.L #$4,SP
+00002310  2217                    1019      MOVE.L (SP),D1
+00002312  4EB9 00002704           1020      JSR DISPDA
+00002318  43F8 105E               1021      LEA SPACE,A1
+0000231C  4EB9 000026F4           1022      JSR DISP
+00002322  43F8 14B6               1023      LEA ADDRREG_1,A1
+00002326  4EB9 000026F4           1024      JSR DISP
+0000232C  588F                    1025      ADD.L #$4,SP
+0000232E  2217                    1026      MOVE.L (SP),D1
+00002330  4EB9 00002704           1027      JSR DISPDA
+00002336  43F8 105E               1028      LEA SPACE,A1
+0000233A  4EB9 000026F4           1029      JSR DISP
+00002340  43F8 14BC               1030      LEA ADDRREG_2,A1
+00002344  4EB9 000026F4           1031      JSR DISP
+0000234A  588F                    1032      ADD.L #$4,SP
+0000234C  2217                    1033      MOVE.L (SP),D1
+0000234E  4EB9 00002704           1034      JSR DISPDA
+00002354  43F8 105E               1035      LEA SPACE,A1
+00002358  4EB9 000026F4           1036      JSR DISP
+0000235E  43F8 14C2               1037      LEA ADDRREG_3,A1
+00002362  4EB9 000026F4           1038      JSR DISP
+00002368  588F                    1039      ADD.L #$4,SP
+0000236A  2217                    1040      MOVE.L (SP),D1
+0000236C  4EB9 00002704           1041      JSR DISPDA
+00002372  43F8 105E               1042      LEA SPACE,A1
+00002376  4EB9 000026E4           1043      JSR DISPCR
+0000237C  43F8 14C8               1044      LEA ADDRREG_4,A1
+00002380  4EB9 000026F4           1045      JSR DISP
+00002386  588F                    1046      ADD.L #$4,SP
+00002388  2217                    1047      MOVE.L (SP),D1
+0000238A  4EB9 00002704           1048      JSR DISPDA
+00002390  43F8 105E               1049      LEA SPACE,A1
+00002394  4EB9 000026F4           1050      JSR DISP
+0000239A  43F8 14CE               1051      LEA ADDRREG_5,A1
+0000239E  4EB9 000026F4           1052      JSR DISP
+000023A4  588F                    1053      ADD.L #$4,SP
+000023A6  2217                    1054      MOVE.L (SP),D1
+000023A8  4EB9 00002704           1055      JSR DISPDA
+000023AE  43F8 105E               1056      LEA SPACE,A1
+000023B2  4EB9 000026F4           1057      JSR DISP
+000023B8  43F8 14D4               1058      LEA ADDRREG_6,A1
+000023BC  4EB9 000026F4           1059      JSR DISP
+000023C2  588F                    1060      ADD.L #$4,SP
+000023C4  2217                    1061      MOVE.L (SP),D1
+000023C6  4EB9 00002704           1062      JSR DISPDA
+000023CC  43F8 105E               1063      LEA SPACE,A1
+000023D0  4EB9 000026F4           1064      JSR DISP
+000023D6  43F8 14DA               1065      LEA ADDRREG_7,A1
+000023DA  4EB9 000026F4           1066      JSR DISP
+000023E0  588F                    1067      ADD.L #$4,SP
+000023E2  2217                    1068      MOVE.L (SP),D1
+000023E4  4EB9 00002704           1069      JSR DISPDA
+000023EA  43F8 105E               1070      LEA SPACE,A1
+000023EE  4EB9 000026E4           1071      JSR DISPCR
+000023F4  43F8 1510               1072      LEA PROGCOUNT,A1
+000023F8  4EB9 000026F4           1073      JSR DISP
+000023FE  588F                    1074      ADD.L #$4,SP
+00002400  2217                    1075      MOVE.L (SP),D1
+00002402  4EB9 00002704           1076      JSR DISPDA
+00002408  9FFC 00000040           1077      SUB.L #$40,SP
+0000240E  43F8 105E               1078      LEA SPACE,A1
+00002412  4EB9 000026F4           1079      JSR DISP
+00002418  43F8 1516               1080      LEA STATUSREG,A1
+0000241C  4EB9 000026F4           1081      JSR DISP
+00002422  40C1                    1082      MOVE.W SR,D1
+00002424  4EB9 00002704           1083      JSR DISPDA
+0000242A  43F8 105E               1084      LEA SPACE,A1
+0000242E  4EB9 000026E4           1085      JSR DISPCR
+00002434  4CDF FFFF               1086      MOVEM.L (SP)+,D0-D7/A0-A7
+00002438  4E75                    1087      RTS
+0000243A                          1088      
+0000243A                          1089  RM:
+0000243A  5649                    1090      ADDQ #3,A1
+0000243C  0C19 002E               1091      CMPI.B #$2E,(A1)+
+00002440  6700 0008               1092      BEQ RM_NEXT
+00002444  4EF9 000025E0           1093      JMP RM_INVALID
+0000244A  0C11 0044               1094  RM_NEXT:    CMPI.B #$44,(A1)
+0000244E  6700 0008               1095      BEQ DRM
+00002452  4EF9 000025E0           1096      JMP RM_INVALID
+00002458  5249                    1097  DRM:  ADDQ #1,A1  
+0000245A  0C11 0030               1098      CMPI.B #$30,(A1)
+0000245E  6700 0042               1099      BEQ D0RM
+00002462  0C11 0031               1100      CMPI.B #$31,(A1)
+00002466  6700 0062               1101      BEQ D1RM
+0000246A  0C11 0032               1102      CMPI.B #$32,(A1)
+0000246E  6700 0082               1103      BEQ D2RM
+00002472  0C11 0033               1104      CMPI.B #$33,(A1)
+00002476  6700 00A2               1105      BEQ D3RM
+0000247A  0C11 0034               1106      CMPI.B #$34,(A1)
+0000247E  6700 00C2               1107      BEQ D4RM
+00002482  0C11 0035               1108      CMPI.B #$35,(A1)
+00002486  6700 00E2               1109      BEQ D5RM
+0000248A  0C11 0036               1110      CMPI.B #$36,(A1)
+0000248E  6700 0102               1111      BEQ D6RM
+00002492  0C11 0037               1112      CMPI.B #$37,(A1)
+00002496  6700 0120               1113      BEQ D7RM
+0000249A  0C11 0038               1114      CMPI.B #$38,(A1)
+0000249E  6C00 0140               1115      BGE RM_INVALID
+000024A2  5449                    1116  D0RM:   ADDQ #2,A1
+000024A4  4EB9 00002718           1117      JSR GET_DATA
+000024AA  5149                    1118      SUBQ #8,A1
+000024AC  4EB9 000028A6           1119      JSR CONV_4
+000024B2  3C07                    1120      MOVE.W D7,D6
+000024B4  4846                    1121      SWAP.W D6
+000024B6  5849                    1122      ADDQ #4,A1
+000024B8  4EB9 000028A6           1123      JSR CONV_4
+000024BE  4246                    1124      CLR.W D6
+000024C0  3C07                    1125      MOVE.W D7,D6
+000024C2  2006                    1126      MOVE.L D6,D0
+000024C4  4EF9 000025EA           1127      JMP RM_END
+000024CA  5449                    1128  D1RM:   ADDQ #2,A1
+000024CC  4EB9 00002718           1129      JSR GET_DATA
+000024D2  5149                    1130      SUBQ #8,A1
+000024D4  4EB9 000028A6           1131      JSR CONV_4
+000024DA  3C07                    1132      MOVE.W D7,D6
+000024DC  4846                    1133      SWAP.W D6
+000024DE  5849                    1134      ADDQ #4,A1
+000024E0  4EB9 000028A6           1135      JSR CONV_4
+000024E6  4246                    1136      CLR.W D6
+000024E8  3C07                    1137      MOVE.W D7,D6
+000024EA  2206                    1138      MOVE.L D6,D1
+000024EC  4EF9 000025EA           1139      JMP RM_END
+000024F2  5449                    1140  D2RM:   ADDQ #2,A1
+000024F4  4EB9 00002718           1141      JSR GET_DATA
+000024FA  5149                    1142      SUBQ #8,A1
+000024FC  4EB9 000028A6           1143      JSR CONV_4
+00002502  3C07                    1144      MOVE.W D7,D6
+00002504  4846                    1145      SWAP.W D6
+00002506  5849                    1146      ADDQ #4,A1
+00002508  4EB9 000028A6           1147      JSR CONV_4
+0000250E  4246                    1148      CLR.W D6
+00002510  3C07                    1149      MOVE.W D7,D6
+00002512  2406                    1150      MOVE.L D6,D2
+00002514  4EF9 000025EA           1151      JMP RM_END
+0000251A  5449                    1152  D3RM:   ADDQ #2,A1
+0000251C  4EB9 00002718           1153      JSR GET_DATA
+00002522  5149                    1154      SUBQ #8,A1
+00002524  4EB9 000028A6           1155      JSR CONV_4
+0000252A  3C07                    1156      MOVE.W D7,D6
+0000252C  4846                    1157      SWAP.W D6
+0000252E  5849                    1158      ADDQ #4,A1
+00002530  4EB9 000028A6           1159      JSR CONV_4
+00002536  4246                    1160      CLR.W D6
+00002538  3C07                    1161      MOVE.W D7,D6
+0000253A  2606                    1162      MOVE.L D6,D3
+0000253C  4EF9 000025EA           1163      JMP RM_END
+00002542  5449                    1164  D4RM:   ADDQ #2,A1
+00002544  4EB9 00002718           1165      JSR GET_DATA
+0000254A  5149                    1166      SUBQ #8,A1
+0000254C  4EB9 000028A6           1167      JSR CONV_4
+00002552  3C07                    1168      MOVE.W D7,D6
+00002554  4846                    1169      SWAP.W D6
+00002556  5849                    1170      ADDQ #4,A1
+00002558  4EB9 000028A6           1171      JSR CONV_4
+0000255E  4246                    1172      CLR.W D6
+00002560  3C07                    1173      MOVE.W D7,D6
+00002562  2806                    1174      MOVE.L D6,D4
+00002564  4EF9 000025EA           1175      JMP RM_END
+0000256A  5449                    1176  D5RM:   ADDQ #2,A1
+0000256C  4EB9 00002718           1177      JSR GET_DATA
+00002572  5149                    1178      SUBQ #8,A1
+00002574  4EB9 000028A6           1179      JSR CONV_4
+0000257A  3C07                    1180      MOVE.W D7,D6
+0000257C  4846                    1181      SWAP.W D6
+0000257E  5849                    1182      ADDQ #4,A1
+00002580  4EB9 000028A6           1183      JSR CONV_4
+00002586  4246                    1184      CLR.W D6
+00002588  3C07                    1185      MOVE.W D7,D6
+0000258A  2A06                    1186      MOVE.L D6,D5
+0000258C  4EF9 000025EA           1187      JMP RM_END
+00002592  5449                    1188  D6RM:   ADDQ #2,A1
+00002594  4EB9 00002718           1189      JSR GET_DATA
+0000259A  5149                    1190      SUBQ #8,A1
+0000259C  4EB9 000028A6           1191      JSR CONV_4
+000025A2  3C07                    1192      MOVE.W D7,D6
+000025A4  4846                    1193      SWAP.W D6
+000025A6  5849                    1194      ADDQ #4,A1
+000025A8  4EB9 000028A6           1195      JSR CONV_4
+000025AE  4246                    1196      CLR.W D6
+000025B0  3C07                    1197      MOVE.W D7,D6
+000025B2  4EF9 000025EA           1198      JMP RM_END
+000025B8  5449                    1199  D7RM:   ADDQ #2,A1
+000025BA  4EB9 00002718           1200      JSR GET_DATA
+000025C0  5149                    1201      SUBQ #8,A1
+000025C2  4EB9 000028A6           1202      JSR CONV_4
+000025C8  3C07                    1203      MOVE.W D7,D6
+000025CA  4846                    1204      SWAP.W D6
+000025CC  5849                    1205      ADDQ #4,A1
+000025CE  4EB9 000028A6           1206      JSR CONV_4
+000025D4  4246                    1207      CLR.W D6
+000025D6  3C07                    1208      MOVE.W D7,D6
+000025D8  2E06                    1209      MOVE.L D6,D7
+000025DA  4EF9 000025EA           1210      JMP RM_END
+000025E0  43F8 13A9               1211  RM_INVALID: LEA INVALID_MSG,A1
+000025E4  4EB9 000026E4           1212      JSR DISPCR
+000025EA  4E75                    1213  RM_END: RTS
+000025EC                          1214  
+000025EC                          1215  DCON:
+000025EC  48E7 FFFE               1216      MOVEM.L D0-D7/A0-A6,-(SP)
+000025F0  7800                    1217      MOVEQ #0,D4
+000025F2  5A49                    1218      ADDQ #5,A1
+000025F4  0C11 0044               1219      CMPI.B #$44,(A1)
+000025F8  6700 0010               1220      BEQ DECTOHEX
+000025FC  0C11 0048               1221      CMPI.B #$48,(A1)
+00002600  6700 0032               1222      BEQ HEXTODEC
+00002604  4EF9 000026B8           1223      JMP DCON_INVALID
+0000260A  5249                    1224  DECTOHEX:   ADDQ #1,A1
+0000260C  4EB9 00002978           1225      JSR GET_DEC
+00002612  43F8 136C               1226      LEA DCONMSG_2,A1
+00002616  4EB9 000026F4           1227      JSR DISP
+0000261C  2206                    1228      MOVE.L D6,D1
+0000261E  4EB9 00002704           1229      JSR DISPDA
+00002624  43F8 105E               1230      LEA SPACE,A1
+00002628  4EB9 000026E4           1231      JSR DISPCR
+0000262E  4EF9 000026C2           1232      JMP DCON_END
+00002634  5249                    1233  HEXTODEC:   ADDQ #1,A1 
+00002636  4EB9 00002718           1234      JSR GET_DATA 
+0000263C  0C02 0003               1235      CMPI.B #$03,D2
+00002640  6700 001A               1236      BEQ HEX2
+00002644  0C02 0004               1237      CMPI.B #$04,D2
+00002648  6700 0022               1238      BEQ HEX3
+0000264C  0C02 0005               1239      CMPI.B #$05,D2
+00002650  6700 002A               1240      BEQ HEX4
+00002654  0C02 0006               1241      CMPI.B #$06,D2
+00002658  6700 0030               1242      BEQ HEX5
+0000265C  93C2                    1243  HEX2:   SUB.L D2,A1
+0000265E  4EB9 00002860           1244      JSR CONV_2
+00002664  2E03                    1245      MOVE.L D3,D7
+00002666  4EF9 00002692           1246      JMP DCON_DISPLAYD   
+0000266C  93C2                    1247  HEX3:   SUB.L D2,A1
+0000266E  4EB9 0000287C           1248      JSR CONV_3
+00002674  2E06                    1249      MOVE.L D6,D7
+00002676  4EF9 00002692           1250      JMP DCON_DISPLAYD
+0000267C  93C2                    1251  HEX4:   SUB.L D2,A1
+0000267E  4EB9 000028A6           1252      JSR CONV_4
+00002684  4EF9 00002692           1253      JMP DCON_DISPLAYD
+0000268A  93C2                    1254  HEX5:   SUB.L D2,A1
+0000268C  4EB9 000028DE           1255      JSR CONV_5
+00002692  43F8 1361               1256  DCON_DISPLAYD:   LEA DCONMSG_1,A1
+00002696  4EB9 000026F4           1257      JSR DISP
+0000269C  2207                    1258      MOVE.L D7,D1
+0000269E  143C 000A               1259      MOVE.B #10,D2
+000026A2  103C 000F               1260      MOVE.B #15,D0
+000026A6  4E4F                    1261      TRAP #15
+000026A8  43F8 105E               1262      LEA SPACE,A1
+000026AC  4EB9 000026E4           1263      JSR DISPCR
+000026B2  4EF9 000026C2           1264      JMP DCON_END
+000026B8  43F8 13A9               1265  DCON_INVALID:   LEA INVALID_MSG,A1
+000026BC  4EB9 000026E4           1266      JSR DISPCR
+000026C2  4CDF 7FFF               1267  DCON_END:   MOVEM.L (SP)+,D0-D7/A0-A6
+000026C6  4E75                    1268      RTS
+000026C8                          1269  
+000026C8                          1270  EXIT:
+000026C8  43F8 105E               1271      LEA SPACE,A1
+000026CC  4EB9 000026E4           1272      JSR DISPCR
+000026D2  43F8 1391               1273      LEA EXITMSG,A1
+000026D6  4EB9 000026F4           1274      JSR DISP
+000026DC  103C 0009               1275      MOVE.B #9,D0
+000026E0  4E4F                    1276      TRAP #15
+000026E2  4E75                    1277      RTS
+000026E4                          1278  
+000026E4                          1279  DISPCR:
+000026E4  48E7 8000               1280      MOVEM.L D0,-(SP)
+000026E8  103C 000D               1281      MOVE.B #13,D0
+000026EC  4E4F                    1282      TRAP #15
+000026EE  4CDF 0001               1283      MOVEM.L (SP)+,D0
+000026F2  4E75                    1284      RTS
+000026F4                          1285   
+000026F4                          1286  DISP:  
+000026F4  48E7 8000               1287      MOVEM.L D0,-(SP)
+000026F8  103C 000E               1288      MOVE.B #14,D0
+000026FC  4E4F                    1289      TRAP #15
+000026FE  4CDF 0001               1290      MOVEM.L (SP)+,D0
+00002702  4E75                    1291      RTS
+00002704                          1292      
+00002704                          1293  DISPDA:
+00002704  48E7 A000               1294      MOVEM.L D0/D2,-(SP)
+00002708  143C 0010               1295      MOVE.B #16,D2
+0000270C  103C 000F               1296      MOVE.B #15,D0
+00002710  4E4F                    1297      TRAP #15
+00002712  4CDF 0005               1298      MOVEM.L (SP)+,D0/D2
+00002716  4E75                    1299      RTS
+00002718                          1300  
+00002718                          1301  GET_DATA:
+00002718  48E7 DF3E               1302      MOVEM.L D0/D1/D3-D7/A2-A6,-(SP)
+0000271C  7030                    1303      MOVEQ #$30,D0
+0000271E  7231                    1304      MOVEQ #$31,D1
+00002720  7400                    1305      MOVEQ #0,D2
+00002722  0C11 0039               1306  DATA_CHECK_2:    CMPI.B #$39,(A1)
+00002726  6E00 000C               1307      BGT DATA_RPT_31_2
+0000272A  9119                    1308  DATA_RPT_30_2:    SUB.B D0,(A1)+
+0000272C  5242                    1309      ADDI #1,D2
+0000272E  4EF9 000027A6           1310      JMP DATA_RECHECK
+00002734  9319                    1311  DATA_RPT_31_2:    SUB.B D1,(A1)+
+00002736  5242                    1312      ADDI #1,D2
+00002738  5349                    1313      SUBQ #1,A1
+0000273A  0C11 0010               1314      CMP.B #$10,(A1)
+0000273E  6700 002A               1315      BEQ DATA_NEXT10_2
+00002742  0C11 0011               1316      CMP.B #$11,(A1)
+00002746  6700 002C               1317      BEQ DATA_NEXT11_2
+0000274A  0C11 0012               1318      CMP.B #$12,(A1)
+0000274E  6700 002E               1319      BEQ DATA_NEXT12_2
+00002752  0C11 0013               1320      CMP.B #$13,(A1)
+00002756  6700 0030               1321      BEQ DATA_NEXT13_2
+0000275A  0C11 0014               1322      CMP.B #$14,(A1)
+0000275E  6700 0032               1323      BEQ DATA_NEXT14_2
+00002762  0C11 0015               1324      CMP.B #$15,(A1)
+00002766  6700 0034               1325      BEQ DATA_NEXT15_2
+0000276A                          1326     
+0000276A  12FC 000A               1327  DATA_NEXT10_2:    MOVE.B #10,(A1)+
+0000276E  4EF9 000027A6           1328      JMP DATA_RECHECK
+00002774  12FC 000B               1329  DATA_NEXT11_2:    MOVE.B #11,(A1)+
+00002778  4EF9 000027A6           1330      JMP DATA_RECHECK
+0000277E  12FC 000C               1331  DATA_NEXT12_2:    MOVE.B #12,(A1)+
+00002782  4EF9 000027A6           1332      JMP DATA_RECHECK
+00002788  12FC 000D               1333  DATA_NEXT13_2:    MOVE.B #13,(A1)+
+0000278C  4EF9 000027A6           1334      JMP DATA_RECHECK
+00002792  12FC 000E               1335  DATA_NEXT14_2:    MOVE.B #14,(A1)+
+00002796  4EF9 000027A6           1336      JMP DATA_RECHECK
+0000279C  12FC 000F               1337  DATA_NEXT15_2:    MOVE.B #15,(A1)+
+000027A0  4EF9 000027A6           1338      JMP DATA_RECHECK   
+000027A6  0C11 0000               1339  DATA_RECHECK:  CMPI.B #$00,(A1)
+000027AA  6600 FF76               1340      BNE DATA_CHECK_2
+000027AE  4CDF 7CFB               1341      MOVEM.L (SP)+,D0/D1/D3-D7/A2-A6 
+000027B2  4E75                    1342      RTS
+000027B4                          1343      
+000027B4                          1344  GET_ADDR_ASCII:
+000027B4  48E7 973E               1345      MOVEM.L D0/D3/D5-D7/A2-A6,-(SP)
+000027B8  7030                    1346      MOVEQ #$30,D0
+000027BA  7231                    1347      MOVEQ #$31,D1
+000027BC  7400                    1348      MOVEQ #0,D2
+000027BE  0C11 0039               1349  ASCII_CHECK_2:    CMPI.B #$39,(A1)
+000027C2  6E00 0014               1350      BGT ASCII_RPT_31_2
+000027C6  9119                    1351  ASCII_RPT_30_2:    SUB.B D0,(A1)+
+000027C8  5242                    1352      ADDQ #1,D2
+000027CA  5244                    1353      ADDQ #1,D4
+000027CC  0C11 0020               1354      CMPI.B #$20,(A1)
+000027D0  66EC                    1355      BNE ASCII_CHECK_2
+000027D2  4EF9 0000285A           1356      JMP ASCII_NEXT1_2
+000027D8  9319                    1357  ASCII_RPT_31_2:    SUB.B D1,(A1)+
+000027DA  5242                    1358      ADDQ #1,D2
+000027DC  5244                    1359      ADDQ #1,D4
+000027DE  5349                    1360      SUBQ #1,A1
+000027E0  0C11 0010               1361      CMP.B #$10,(A1)
+000027E4  6700 002A               1362      BEQ ASCII_NEXT10_2
+000027E8  0C11 0011               1363      CMP.B #$11,(A1)
+000027EC  6700 002C               1364      BEQ ASCII_NEXT11_2
+000027F0  0C11 0012               1365      CMP.B #$12,(A1)
+000027F4  6700 002E               1366      BEQ ASCII_NEXT12_2
+000027F8  0C11 0013               1367      CMP.B #$13,(A1)
+000027FC  6700 0030               1368      BEQ ASCII_NEXT13_2
+00002800  0C11 0014               1369      CMP.B #$14,(A1)
+00002804  6700 0032               1370      BEQ ASCII_NEXT14_2
+00002808  0C11 0015               1371      CMP.B #$15,(A1)
+0000280C  6700 0034               1372      BEQ ASCII_NEXT15_2
+00002810  12FC 000A               1373  ASCII_NEXT10_2:    MOVE.B #10,(A1)+
+00002814  4EF9 0000284C           1374      JMP ASCII_31_2
+0000281A  12FC 000B               1375  ASCII_NEXT11_2:    MOVE.B #11,(A1)+
+0000281E  4EF9 0000284C           1376      JMP ASCII_31_2
+00002824  12FC 000C               1377  ASCII_NEXT12_2:    MOVE.B #12,(A1)+
+00002828  4EF9 0000284C           1378      JMP ASCII_31_2
+0000282E  12FC 000D               1379  ASCII_NEXT13_2:    MOVE.B #13,(A1)+
+00002832  4EF9 0000284C           1380      JMP ASCII_31_2
+00002838  12FC 000E               1381  ASCII_NEXT14_2:    MOVE.B #14,(A1)+
+0000283C  4EF9 0000284C           1382      JMP ASCII_31_2
+00002842  12FC 000F               1383  ASCII_NEXT15_2:    MOVE.B #15,(A1)+
+00002846  4EF9 0000284C           1384      JMP ASCII_31_2    
+0000284C  0C11 0020               1385  ASCII_31_2:  CMPI.B #$20,(A1)
+00002850  6600 FF6C               1386      BNE ASCII_CHECK_2
+00002854  4EF9 0000285A           1387      JMP ASCII_NEXT1_2
+0000285A  4CDF 7CE9               1388  ASCII_NEXT1_2: MOVEM.L (SP)+,D0/D3/D5-D7/A2-A6 
+0000285E  4E75                    1389      RTS
+00002860                          1390      
+00002860                          1391  CONV_2:
+00002860  48E7 E8FE               1392      MOVEM.L D0-D2/D4/A0-A6,-(SP)
+00002864  7010                    1393      MOVE.L #16,D0
+00002866  7201                    1394      MOVEQ #1,D1
+00002868  4282                    1395      CLR.L D2
+0000286A  4283                    1396      CLR.L D3
+0000286C  1419                    1397      MOVE.B (A1)+,D2
+0000286E  1619                    1398      MOVE.B (A1)+,D3
+00002870  C5C0                    1399      MULS.W D0,D2
+00002872  C7C1                    1400      MULS.W D1,D3
+00002874  D642                    1401      ADD.W D2,D3
+00002876  4CDF 7F17               1402      MOVEM.L (SP)+,D0-D2/D4/A0-A6
+0000287A  4E75                    1403      RTS    
+0000287C                          1404      
+0000287C                          1405  CONV_3:
+0000287C  48E7 FCFE               1406      MOVEM.L D0-D5/A0-A6,-(SP)
+00002880  203C 00000100           1407  CONV_3_BEG:    MOVE.L #256,D0
+00002886  7210                    1408      MOVEQ #16,D1
+00002888  7401                    1409      MOVEQ #1,D2
+0000288A  4284                    1410      CLR.L D4
+0000288C  4285                    1411      CLR.L D5
+0000288E  4286                    1412      CLR.L D6
+00002890  1819                    1413      MOVE.B (A1)+,D4
+00002892  1A19                    1414      MOVE.B (A1)+,D5
+00002894  1C19                    1415      MOVE.B (A1)+,D6
+00002896  C9C0                    1416      MULS.W D0,D4
+00002898  CBC1                    1417      MULS.W D1,D5
+0000289A  CDC2                    1418      MULS.W D2,D6
+0000289C  DA44                    1419      ADD.W D4,D5
+0000289E  DC45                    1420      ADD.W D5,D6
+000028A0  4CDF 7F3F               1421  CONV_3_END:    MOVEM.L (SP)+,D0-D5/A0-A6
+000028A4  4E75                    1422      RTS
+000028A6                          1423      
+000028A6                          1424  CONV_4:
+000028A6  48E7 FEFE               1425      MOVEM.L D0-D6/A0-A6,-(SP)
+000028AA  203C 00001000           1426  CONV_4_BEG:    MOVE.L #4096,D0
+000028B0  223C 00000100           1427      MOVE.L #256,D1
+000028B6  7410                    1428      MOVEQ #16,D2
+000028B8  7601                    1429      MOVEQ #1,D3
+000028BA  4284                    1430      CLR.L D4
+000028BC  4285                    1431      CLR.L D5
+000028BE  4286                    1432      CLR.L D6
+000028C0  4287                    1433      CLR.L D7
+000028C2  1819                    1434      MOVE.B (A1)+,D4
+000028C4  1A19                    1435      MOVE.B (A1)+,D5
+000028C6  1C19                    1436      MOVE.B (A1)+,D6
+000028C8  1E19                    1437      MOVE.B (A1)+,D7
+000028CA  C9C0                    1438      MULS.W D0,D4
+000028CC  CBC1                    1439      MULS.W D1,D5
+000028CE  CDC2                    1440      MULS.W D2,D6
+000028D0  CFC3                    1441      MULS.W D3,D7
+000028D2  DA44                    1442      ADD.W D4,D5
+000028D4  DC45                    1443      ADD.W D5,D6
+000028D6  DE46                    1444      ADD.W D6,D7
+000028D8  4CDF 7F7F               1445  CONV_4_END:    MOVEM.L (SP)+,D0-D6/A0-A6
+000028DC  4E75                    1446      RTS
+000028DE                          1447      
+000028DE                          1448  CONV_5:
+000028DE  48E7 FEFE               1449      MOVEM.L D0-D6/A0-A6,-(SP)
+000028E2  203C 00010000           1450  CONV_5_BEG:    MOVE.L #65536,D0
+000028E8  223C 00001000           1451      MOVE.L #4096,D1
+000028EE  243C 00000100           1452      MOVE.L #256,D2
+000028F4  7610                    1453      MOVEQ #16,D3
+000028F6  4284                    1454      CLR.L D4
+000028F8  4285                    1455      CLR.L D5
+000028FA  4286                    1456      CLR.L D6
+000028FC  4287                    1457      CLR.L D7
+000028FE  1819                    1458      MOVE.B (A1)+,D4
+00002900  1A19                    1459      MOVE.B (A1)+,D5
+00002902  1C19                    1460      MOVE.B (A1)+,D6
+00002904  1E19                    1461      MOVE.B (A1)+,D7
+00002906  4840                    1462      SWAP.W D0
+00002908  C9C0                    1463      MULS.W D0,D4
+0000290A  4844                    1464      SWAP.W D4
+0000290C  CBC1                    1465      MULS.W D1,D5
+0000290E  CDC2                    1466      MULS.W D2,D6
+00002910  CFC3                    1467      MULS.W D3,D7
+00002912  DA84                    1468      ADD.L D4,D5
+00002914  DC85                    1469      ADD.L D5,D6
+00002916  DE86                    1470      ADD.L D6,D7
+00002918  4284                    1471      CLR.L D4
+0000291A  1811                    1472      MOVE.B (A1),D4
+0000291C  7001                    1473      MOVEQ #1,D0
+0000291E  C9C0                    1474      MULS.W D0,D4
+00002920  DE84                    1475      ADD.L D4,D7
+00002922  4CDF 7F7F               1476  CONV_5_END:    MOVEM.L (SP)+,D0-D6/A0-A6
+00002926  4E75                    1477      RTS
+00002928                          1478      
+00002928                          1479  SORTW_D:
+00002928  48A7 FFFE               1480      MOVEM D0-D7/A0-A6,-(SP)    
+0000292C  244D                    1481      MOVE.L A5,A2
+0000292E  2A4A                    1482  D_SORT_AG:    MOVE.L A2,A5
+00002930  BB4D                    1483  D_CMP_CONTINUE:    CMP.W (A5)+,(A5)+
+00002932  6200 000E               1484      BHI D_PERFORM_SWAP
+00002936  558D                    1485      SUBQ.L #2,A5
+00002938  BDCD                    1486      CMP.L A5,A6
+0000293A  66F4                    1487      BNE D_CMP_CONTINUE
+0000293C  4EF9 0000294A           1488      JMP SORTW_D_END
+00002942  2025                    1489  D_PERFORM_SWAP:   MOVE.L -(A5),D0
+00002944  4840                    1490      SWAP.W D0
+00002946  2A80                    1491      MOVE.L D0,(A5)
+00002948  60E4                    1492      BRA D_SORT_AG
+0000294A  4C9F 7FFF               1493  SORTW_D_END:     MOVEM (SP)+,D0-D7/A0-A6 
+0000294E  4E75                    1494      RTS
+00002950                          1495      
+00002950                          1496  SORTW_A:
+00002950  48A7 FFFE               1497      MOVEM D0-D7/A0-A6,-(SP)    
+00002954  244D                    1498      MOVE.L A5,A2
+00002956  2A4A                    1499  A_SORT_AG:    MOVE.L A2,A5
+00002958  BB4D                    1500  A_CMP_CONTINUE:    CMP.W (A5)+,(A5)+
+0000295A  6500 000E               1501      BCS A_PERFORM_SWAP
+0000295E  558D                    1502      SUBQ.L #2,A5
+00002960  BDCD                    1503      CMP.L A5,A6
+00002962  66F4                    1504      BNE A_CMP_CONTINUE
+00002964  4EF9 00002972           1505      JMP SORTW_A_END
+0000296A  2025                    1506  A_PERFORM_SWAP:   MOVE.L -(A5),D0
+0000296C  4840                    1507      SWAP.W D0
+0000296E  2A80                    1508      MOVE.L D0,(A5)
+00002970  60E4                    1509      BRA A_SORT_AG
+00002972  4C9F 7FFF               1510  SORTW_A_END:     MOVEM (SP)+,D0-D7/A0-A6 
+00002976  4E75                    1511      RTS
+00002978                          1512  
+00002978                          1513  GET_DEC:
+00002978  48E7 FCFE               1514      MOVEM.L D0-D5/A0-A6,-(SP)
+0000297C  7030                    1515      MOVEQ #$30,D0
+0000297E  9119                    1516      SUB.B D0,(A1)+
+00002980  9119                    1517      SUB.B D0,(A1)+
+00002982  9111                    1518      SUB.B D0,(A1)
+00002984  5549                    1519      SUBQ #2,A1
+00002986  7064                    1520      MOVE.L #100,D0
+00002988  720A                    1521      MOVEQ #10,D1
+0000298A  7401                    1522      MOVEQ #1,D2
+0000298C  4284                    1523      CLR.L D4
+0000298E  4285                    1524      CLR.L D5
+00002990  4286                    1525      CLR.L D6
+00002992  1819                    1526      MOVE.B (A1)+,D4
+00002994  1A19                    1527      MOVE.B (A1)+,D5
+00002996  1C19                    1528      MOVE.B (A1)+,D6
+00002998  C9C0                    1529      MULS.W D0,D4
+0000299A  CBC1                    1530      MULS.W D1,D5
+0000299C  CDC2                    1531      MULS.W D2,D6
+0000299E  DA44                    1532      ADD.W D4,D5
+000029A0  DC45                    1533      ADD.W D5,D6
+000029A2  4CDF 7F3F               1534      MOVEM.L (SP)+,D0-D5/A0-A6
+000029A6  4E75                    1535      RTS
+000029A8                          1536      
+000029A8                          1537  ADDR_ERR:
+000029A8  48E7 E040               1538      MOVEM.L D0-D2/A1,-(SP)
+000029AC  43F8 1409               1539      LEA AERR_MSG,A1
+000029B0  4EB8 26E4               1540      JSR DISPCR
+000029B4  222F 0012               1541      MOVE.L (18,SP),D1
+000029B8  4EB8 2704               1542      JSR DISPDA
+000029BC  43F8 105E               1543      LEA SPACE,A1
+000029C0  4EB8 26F4               1544      JSR DISP
+000029C4  4281                    1545      CLR.L D1
+000029C6  322F 0016               1546      MOVE.W (22,SP),D1
+000029CA  4EB8 2704               1547      JSR DISPDA
+000029CE  43F8 105E               1548      LEA SPACE,A1
+000029D2  4EB8 26F4               1549      JSR DISP
+000029D6  4281                    1550      CLR.L D1
+000029D8  322F 0018               1551      MOVE.W (24,SP),D1
+000029DC  4EB8 2704               1552      JSR DISPDA
+000029E0  43F8 105E               1553      LEA SPACE,A1
+000029E4  4EB8 26E4               1554      JSR DISPCR
+000029E8  4EB8 2212               1555      JSR DF
+000029EC  DFFC 0000001E           1556      ADD.L #$1E,SP
+000029F2  6000 0128               1557      BRA MAIN
+000029F6                          1558      
+000029F6                          1559  BUS_ERR:
+000029F6  48E7 E040               1560      MOVEM.L D0-D2/A1,-(SP)
+000029FA  43F8 13F5               1561      LEA BERR_MSG,A1
+000029FE  4EB8 26E4               1562      JSR DISPCR
+00002A02  222F 0012               1563      MOVE.L (18,SP),D1
+00002A06  4EB8 2704               1564      JSR DISPDA
+00002A0A  43F8 105E               1565      LEA SPACE,A1
+00002A0E  4EB8 26F4               1566      JSR DISP
+00002A12  4281                    1567      CLR.L D1
+00002A14  322F 0016               1568      MOVE.W (22,SP),D1
+00002A18  4EB8 2704               1569      JSR DISPDA
+00002A1C  43F8 105E               1570      LEA SPACE,A1
+00002A20  4EB8 26F4               1571      JSR DISP
+00002A24  4281                    1572      CLR.L D1
+00002A26  322F 0018               1573      MOVE.W (24,SP),D1
+00002A2A  4EB8 2704               1574      JSR DISPDA
+00002A2E  43F8 105E               1575      LEA SPACE,A1
+00002A32  4EB8 26E4               1576      JSR DISPCR
+00002A36  4EB8 2212               1577      JSR DF
+00002A3A  DFFC 0000001E           1578      ADD.L #$1E,SP
+00002A40  6000 00DA               1579      BRA MAIN
+00002A44                          1580      
+00002A44                          1581  IL_INST:
+00002A44  48E7 8040               1582      MOVEM.L D0/A1,-(SP)
+00002A48  43F8 1421               1583      LEA ILLERR_MSG,A1
+00002A4C  4EB8 26E4               1584      JSR DISPCR
+00002A50  4EB8 2212               1585      JSR DF
+00002A54  4CDF 0201               1586      MOVEM.L (SP)+,D0/A1
+00002A58  6000 00C2               1587      BRA MAIN
+00002A5C                          1588  
+00002A5C                          1589  DIV_Z:
+00002A5C  48E7 8040               1590      MOVEM.L D0/A1,-(SP)
+00002A60  43F8 145D               1591      LEA DIVZERR_MSG,A1
+00002A64  4EB8 26E4               1592      JSR DISPCR
+00002A68  4CDF 0201               1593      MOVEM.L (SP)+,D0/A1
+00002A6C  4EB8 2212               1594      JSR DF
+00002A70  6000 00AA               1595      BRA MAIN
+00002A74                          1596  
+00002A74                          1597  CHK_INST:
+00002A74  48E7 8040               1598      MOVEM.L D0/A1,-(SP)
+00002A78  43F8 1476               1599      LEA CHKERR_MSG,A1
+00002A7C  4EB8 26E4               1600      JSR DISPCR
+00002A80  4CDF 0201               1601      MOVEM.L (SP)+,D0/A1
+00002A84  4EB8 2212               1602      JSR DF
+00002A88  6000 0092               1603      BRA MAIN
+00002A8C                          1604  
+00002A8C                          1605  PRI_VIO:
+00002A8C  48E7 8040               1606      MOVEM.L D0/A1,-(SP)
+00002A90  43F8 143F               1607      LEA PRIVERR_MSG,A1
+00002A94  4EB8 26E4               1608      JSR DISPCR
+00002A98  4CDF 0201               1609      MOVEM.L (SP)+,D0/A1
+00002A9C  4EB8 2212               1610      JSR DF
+00002AA0  6000 007A               1611      BRA MAIN
+00002AA4                          1612  
+00002AA4                          1613  LINE_A:
+00002AA4  48E7 8040               1614      MOVEM.L D0/A1,-(SP)
+00002AA8  43F8 1490               1615      LEA LINEAERR_MSG,A1
+00002AAC  4EB8 26E4               1616      JSR DISPCR
+00002AB0  4CDF 0201               1617      MOVEM.L (SP)+,D0/A1
+00002AB4  4EB8 2212               1618      JSR DF
+00002AB8  6000 0062               1619      BRA MAIN
+00002ABC                          1620  
+00002ABC                          1621  LINE_F:
+00002ABC  48E7 8040               1622      MOVEM.L D0/A1,-(SP)
+00002AC0  43F8 14A0               1623      LEA LINEFERR_MSG,A1
+00002AC4  4EB8 26E4               1624      JSR DISPCR
+00002AC8  4CDF 0201               1625      MOVEM.L (SP)+,D0/A1
+00002ACC  4EB8 2212               1626      JSR DF
+00002AD0  6000 004A               1627      BRA MAIN
+00002AD4                          1628         
+00002AD4                          1629  START: 
+00002AD4  4FF8 3000               1630      LEA STACK,A7
+00002AD8  21FC 000029F6 0008      1631      MOVE.L #BUS_ERR,$8
+00002AE0  21FC 000029A8 000C      1632      MOVE.L #ADDR_ERR,$C   
+00002AE8  21FC 00002A44 0010      1633      MOVE.L #IL_INST,$10
+00002AF0  21FC 00002A5C 0014      1634      MOVE.L #DIV_Z,$14
+00002AF8  21FC 00002A74 0018      1635      MOVE.L #CHK_INST,$18
+00002B00  21FC 00002A8C 0020      1636      MOVE.L #PRI_VIO,$20
+00002B08  21FC 00002AA4 0028      1637      MOVE.L #LINE_A,$28
+00002B10  21FC 00002ABC 002C      1638      MOVE.L #LINE_F,$2C
+00002B18  6000 0002               1639      BRA MAIN
+00002B1C                          1640      
+00002B1C                          1641  MAIN:
+00002B1C  43F8 105E               1642      LEA SPACE,A1
+00002B20  4EB8 26E4               1643      JSR DISPCR
+00002B24  43F8 1000               1644      LEA PROMPT,A1
+00002B28  4EB8 26F4               1645      JSR DISP
+00002B2C  43F8 100E               1646      LEA IP_BUFFER,A1
+00002B30  103C 0002               1647      MOVE.B #2,D0
+00002B34  4E4F                    1648      TRAP #15
+00002B36  2601                    1649      MOVE.L D1,D3
+00002B38  7000                    1650      MOVEQ #0,D0
+00002B3A  7200                    1651      MOVEQ #0,D1
+00002B3C  7400                    1652      MOVEQ #0,D2
+00002B3E  45F8 2C00               1653      LEA A2ADDRS,A2
+00002B42  49F8 151C               1654      LEA CMDTABLE,A4
+00002B46  4BF8 1570               1655      LEA CMDADDRS,A5
+00002B4A  0C11 0020               1656  RPT:    CMP.B #$20,(A1)
+00002B4E  6700 0006               1657      BEQ CHECK
+00002B52  14D9                    1658      MOVE.B (A1)+,(A2)+
+00002B54  60F4                    1659      BRA RPT
+00002B56  0C02 000D               1660  CHECK:    CMPI.B #$0D,D2
+00002B5A  6E00 002A               1661      BGT MAIN_INVALID    
+00002B5E  45F8 2C00               1662      LEA A2ADDRS,A2
+00002B62  3834 0000               1663      MOVE.W (A4,D0),D4
+00002B66  B852                    1664      CMP.W (A2),D4
+00002B68  6700 000A               1665      BEQ NEXT
+00002B6C  5C40                    1666      ADDI #6,D0
+00002B6E  5241                    1667      ADDI #1,D1 
+00002B70  5242                    1668      ADDI #1,D2         
+00002B72  60E2                    1669      BRA CHECK
+00002B74  43F8 100E               1670  NEXT:   LEA IP_BUFFER,A1   
+00002B78  DAC1                    1671      ADD.W D1,A5
+00002B7A  3C75 1000               1672      MOVE.W (A5,D1),A6                       
+00002B7E  4E96                    1673      JSR (A6)
+00002B80  4EF9 00002B8E           1674      JMP RERUN_UNTIL_EXIT 
+00002B86  43F8 13A9               1675  MAIN_INVALID:   LEA INVALID_MSG,A1
+00002B8A  4EB8 26E4               1676      JSR DISPCR
+00002B8E  7400                    1677  RERUN_UNTIL_EXIT:     MOVEQ #0,D2
+00002B90  7800                    1678      MOVEQ #0,D4
+00002B92  6088                    1679      BRA MAIN
+00002B94                          1680      
+00002B94                          1681      
+00002B94                          1682  **************************************************************** 
+00002B94                          1683     
+00002B94                          1684  *-----ADDRESS ERROR--------*    
+00009000                          1685      ORG $9000
+00009000                          1686  AERR_TEST:    
+00009000  243C 0000FFFF           1687      MOVE.L #$FFFF,D2
+00009006  45F8 2001               1688      LEA $2001,A2
+0000900A  2482                    1689      MOVE.L D2,(A2)
+0000900C                          1690  
+0000900C                          1691  
+0000900C                          1692  *-----LINE A EMULATOR--------*
+00009020                          1693      ORG $9020
+00009020                          1694  LINEA_TEST: 
+00009020= A000                    1695      DC.W $A000
+00009022                          1696    
+00009022                          1697  
+00009022                          1698  *-----LINE F EMULATOR--------*  
+00009030                          1699      ORG $9030
+00009030                          1700  LINEF_TEST:
+00009030= F000                    1701      DC.W $F000
+00009032                          1702      
+00009032                          1703  
+00009032                          1704  *-----CHK INSTRUCTION--------* 
+00009040                          1705      ORG $9040
+00009040                          1706  CHKERR_TEST:
+00009040  3C3C 3000               1707      MOVE.W #$3000,D6
+00009044  3E3C 3010               1708      MOVE.W #$3010,D7
+00009048  4F86                    1709      CHK.W D6,D7
+0000904A                          1710  
+0000904A                          1711  
+0000904A                          1712  *------DIVZERO ERROR-------*
+00009060                          1713      ORG $9060
+00009060                          1714  DIVZERR_TEST:
+00009060  103C 0000               1715      MOVE.B #$00,D0
+00009064  123C 00FF               1716      MOVE.B #$FF,D1
+00009068  82C0                    1717      DIVU.W D0,D1
+0000906A                          1718  
+0000906A                          1719  
+0000906A                          1720  *------ILLEGAL INSTRUCTION------*
+00009070                          1721      ORG $9070
+00009070                          1722  ILL_TEST:
+00009070= 4AFA                    1723      DC.W $4AFA
+00009072                          1724  
+00009072                          1725  
+00009072                          1726  *----PRIVILEGE VIOLATION---* 
+00009080                          1727      ORG $9080
+00009080                          1728  PRIV_TEST:    
+00009080  027C 02BC               1729      ANDI.W #0700,SR
+00009084  60FA                    1730      BRA PRIV_TEST
+00009086                          1731  
+00009086                          1732      
+00009086                          1733  *-----BUS ERROR--------*
+00009100                          1734      ORG $9100
+00009100                          1735  BERR_TEST:
+00009100  45F9 00A00004           1736      LEA $A00004,A2
+00009106  24BC 00001234           1737      MOVE.L #$1234,(A2)
+0000910C                          1738  
+0000910C                          1739  
+0000910C                          1740  ****************************************************************   
+0000910C                          1741  
+00009200                          1742      ORG $9200
+00009200                          1743  USERPROG:
+00009200  43F8 137B               1744      LEA GOMSG,A1
+00009204  4EB8 26E4               1745      JSR DISPCR
+00009208  6000 9912               1746      BRA MAIN
+0000920C                          1747     
+0000920C                          1748      END START
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+A1UPDATE3           1FDC
+A1UPDATE4           1FEA
+A1UPDATE5           1FF8
+A2ADDRS             2C00
+ADDRREG_0           14B0
+ADDRREG_1           14B6
+ADDRREG_2           14BC
+ADDRREG_3           14C2
+ADDRREG_4           14C8
+ADDRREG_5           14CE
+ADDRREG_6           14D4
+ADDRREG_7           14DA
+ADDR_ERR            29A8
+AERR_MSG            1409
+AERR_TEST           9000
+ASCII_31_2          284C
+ASCII_CHECK_2       27BE
+ASCII_NEXT10_2      2810
+ASCII_NEXT11_2      281A
+ASCII_NEXT12_2      2824
+ASCII_NEXT13_2      282E
+ASCII_NEXT14_2      2838
+ASCII_NEXT15_2      2842
+ASCII_NEXT1_2       285A
+ASCII_RPT_30_2      27C6
+ASCII_RPT_31_2      27D8
+A_CMP_CONTINUE      2958
+A_PERFORM_SWAP      296A
+A_SORT_AG           2956
+BERR_MSG            13F5
+BERR_TEST           9100
+BF                  1BD8
+BFAG                1D58
+BFNEXT1             1C1E
+BFNEXT2             1C78
+BFNEXT3             1CD2
+BF_DIGITS3          1C0E
+BF_DIGITS4          1C68
+BF_DIGITS5          1CC2
+BF_END              1D6E
+BF_INVALID          1D64
+BF_NEXT             1BEE
+BF_SKIP_3DIG        1D48
+BF_SKIP_4DIG        1D32
+BF_SKIP_5DIG        1D1C
+BMOV                1EF8
+BMOV_AG             2006
+BMOV_DIGITS3        1F2E
+BMOV_DIGITS4        1F62
+BMOV_DIGITS5        1F96
+BMOV_END            201C
+BMOV_INVALID        2012
+BMOV_NEXT           1F0E
+BMOV_NEXT_1         1F3E
+BMOV_NEXT_2         1F72
+BMOV_NEXT_3         1FA6
+BSCH                2022
+BSCHMSG_1           12DD
+BSCHMSG_2           12D3
+BSCHMSG_3           12E7
+BSCH_AG             213A
+BSCH_AG_BEG         2122
+BSCH_CHECK          20F8
+BSCH_CHECK_NEXT     214E
+BSCH_DIGITS3        2058
+BSCH_DIGITS3_1      2110
+BSCH_DIGITS4        2092
+BSCH_DIGITS4_1      2118
+BSCH_DIGITS5        20C8
+BSCH_DIGITS5_1      2120
+BSCH_DISPLAY        217C
+BSCH_END            21B0
+BSCH_INVALID        216C
+BSCH_NEXT           2038
+BSCH_NEXT_1         2068
+BSCH_NEXT_2         20A2
+BSCH_NEXT_3         20D8
+BSCH_NOTFOUND       215C
+BSCH_PROCEED        2136
+BTST                1D74
+BTSTMSG_1           1309
+BTSTMSG_2           132B
+BTSTMSG_3           1331
+BTSTMSG_4           1341
+BTSTMSG_5           1351
+BTSTSET             1E6C
+BTST_BEG            1E46
+BTST_DIGITS3        1DAA
+BTST_DIGITS4        1DE0
+BTST_DIGITS5        1E16
+BTST_END            1EF2
+BTST_ERR            1E84
+BTST_INVALID        1EE8
+BTST_NEXT           1D8A
+BTST_NEXT_1         1DBA
+BTST_NEXT_2         1DF0
+BTST_NEXT_3         1E26
+BTST_NOERR          1E6A
+BTST_READ           1E50
+BTST_READ_CONTINUE  1E60
+BUS_ERR             29F6
+CHECK               2B56
+CHKERR_MSG          1476
+CHKERR_TEST         9040
+CHK_INST            2A74
+CMDADDRS            1570
+CMDTABLE            151C
+CONV_2              2860
+CONV_3              287C
+CONV_3_BEG          2880
+CONV_3_END          28A0
+CONV_4              28A6
+CONV_4_BEG          28AA
+CONV_4_END          28D8
+CONV_5              28DE
+CONV_5_BEG          28E2
+CONV_5_END          2922
+D0RM                24A2
+D1RM                24CA
+D2RM                24F2
+D3RM                251A
+D4RM                2542
+D5RM                256A
+D6RM                2592
+D7RM                25B8
+DATAREG_0           14E0
+DATAREG_1           14E6
+DATAREG_2           14EC
+DATAREG_3           14F2
+DATAREG_4           14F8
+DATAREG_5           14FE
+DATAREG_6           1504
+DATAREG_7           150A
+DATA_CHECK_2        2722
+DATA_NEXT10_2       276A
+DATA_NEXT11_2       2774
+DATA_NEXT12_2       277E
+DATA_NEXT13_2       2788
+DATA_NEXT14_2       2792
+DATA_NEXT15_2       279C
+DATA_RECHECK        27A6
+DATA_RPT_30_2       272A
+DATA_RPT_31_2       2734
+DCON                25EC
+DCONMSG_1           1361
+DCONMSG_2           136C
+DCON_DISPLAYD       2692
+DCON_END            26C2
+DCON_INVALID        26B8
+DECTOHEX            260A
+DF                  2212
+DISP                26F4
+DISPCR              26E4
+DISPDA              2704
+DIVZERR_MSG         145D
+DIVZERR_TEST        9060
+DIV_Z               2A5C
+DRM                 2458
+D_CMP_CONTINUE      2930
+D_PERFORM_SWAP      2942
+D_SORT_AG           292E
+EXIT                26C8
+EXITMSG             1391
+GETNOOFBYTES        1FC4
+GET_ADDR_ASCII      27B4
+GET_DATA            2718
+GET_DEC             2978
+GET_LENGTH          2124
+GET_NEXTADDR_3      1814
+GET_NEXTADDR_4      186C
+GET_NEXTADDR_5      18C2
+GET_NEXT_ADDR3      169A
+GET_NEXT_ADDR4      16EE
+GET_NEXT_ADDR5      1742
+GET_NEXT_ADDR_3     1C46
+GET_NEXT_ADDR_4     1CA0
+GET_NEXT_ADDR_5     1CFA
+GO                  21B6
+GOMSG               137B
+GOTODATARX          1B56
+GOTO_SORT_A         193A
+GOTO_SORT_D         192E
+GO_3                21E4
+GO_4                21F0
+GO_END              220C
+GO_INVALID          2202
+GO_NEXT             21CC
+GO_TO_ADDR          21FC
+HELP                158C
+HELPMSG_1           1060
+HELPMSG_10          121C
+HELPMSG_11          123B
+HELPMSG_12          1252
+HELPMSG_13          1288
+HELPMSG_14          12BA
+HELPMSG_2           1083
+HELPMSG_3           10CE
+HELPMSG_4           110B
+HELPMSG_5           113F
+HELPMSG_6           1166
+HELPMSG_7           118F
+HELPMSG_8           11BE
+HELPMSG_9           11F1
+HEX2                265C
+HEX3                266C
+HEX4                267C
+HEX5                268A
+HEXTODEC            2634
+ILLERR_MSG          1421
+ILL_TEST            9070
+IL_INST             2A44
+INVALID_MSG         13A9
+IP_BUFFER           100E
+LINEAERR_MSG        1490
+LINEA_TEST          9020
+LINEFERR_MSG        14A0
+LINEF_TEST          9030
+LINE_A              2AA4
+LINE_F              2ABC
+MAIN                2B1C
+MAIN_INVALID        2B86
+MDSP                1636
+MDSP_3              166C
+MDSP_3RANGE         168A
+MDSP_4              16C0
+MDSP_4RANGE         16DE
+MDSP_5              1714
+MDSP_5RANGE         1732
+MDSP_DIS            1762
+MDSP_END            17A0
+MDSP_INVALID        1796
+MDSP_NEXT           164C
+MM                  1956
+MM_BUFF             2C50
+MM_BYTE             19FE
+MM_CHECK_3          19B6
+MM_CHECK_4          19C6
+MM_CHECK_5          19D6
+MM_DIGITS3          198C
+MM_DIGITS4          199A
+MM_DIGITS5          19A8
+MM_END              1AF0
+MM_INVALID          1AE6
+MM_LONG             1A92
+MM_NEXT             196C
+MM_NEXT_1           19E6
+MM_WORD             1A48
+MS                  1AF6
+MS_3                1B2C
+MS_4                1B3C
+MS_5                1B4C
+MS_BYTE             1B7C
+MS_END              1BD2
+MS_INVALID          1BC8
+MS_LONG             1B9C
+MS_NEXT             1B0C
+MS_WORD             1B8C
+NEXT                2B74
+PRIVERR_MSG         143F
+PRIV_TEST           9080
+PRI_VIO             2A8C
+PROGCOUNT           1510
+PROMPT              1000
+PUT_ASCII           1BB6
+RERUN_UNTIL_EXIT    2B8E
+RM                  243A
+RM_END              25EA
+RM_INVALID          25E0
+RM_NEXT             244A
+RPT                 2B4A
+SORTW               17A6
+SORTW_A             2950
+SORTW_A_END         2972
+SORTW_D             2928
+SORTW_DIGITS3       17DC
+SORTW_DIGITS3_1     18F8
+SORTW_DIGITS4       1834
+SORTW_DIGITS4_1     190A
+SORTW_DIGITS5       188C
+SORTW_DIGITS5_1     191C
+SORTW_D_END         294A
+SORTW_END           1950
+SORTW_INVALID       1946
+SORTW_NEXT          17BC
+SORTW_NEXT_1        17EC
+SORTW_NEXT_2        1844
+SORTW_NEXT_3        189C
+SORTW_SETUP         18E0
+SPACE               105E
+STACK               3000
+START               2AD4
+STATUSREG           1516
+USERPROG            9200
